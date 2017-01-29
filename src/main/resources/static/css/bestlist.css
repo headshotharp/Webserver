@@ -1,0 +1,56 @@
+#bestlist {
+	width: calc(100% - 8em);
+	margin: 0 auto;
+	margin-top: 4em;
+	border: 1px solid #000;
+	background-color: #fff;
+	border-spacing: 0px 0.2em;
+	border-collapse: collapse;
+}
+
+#bestlist p {
+	margin: 0;
+}
+
+#bestlist tr {
+	height: 2.5em;
+}
+
+#bestlist tr:nth-child(even) {
+	background-color: #eee;
+}
+
+#bestlist tr th {
+	border-bottom: 1px solid #000;
+}
+
+#bestlist tr th:first-child {
+	text-align: left;
+}
+
+#bestlist tr td {
+	border-right: 1px solid #000;
+}
+
+#bestlist tr td:last-child {
+	border-right: none;
+}
+
+#bestlist tr td p {
+	white-space: nowrap;
+	margin: 0 0.5em;
+}
+
+#bestlist tr td:first-child p, #bestlist tr th:first-child p {
+	margin-left: 3em;
+}
+
+#bestlist tr .name {
+	background-repeat: no-repeat;
+	background-size: contain;
+	text-align: left;
+}
+
+#bestlist tr .broken, #bestlist tr .placed, #bestlist tr .money {
+	text-align: right;
+}

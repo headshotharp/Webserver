@@ -1,0 +1,38 @@
+.playerlist {
+	text-align: center;
+}
+
+.playerlist .player {
+	position: relative;
+	display: inline-block;
+	text-align: center;
+	margin: 1em 4em;
+}
+
+.playerlist .player .name {
+	background-color: rgba(255, 255, 255, 0.85);
+	padding: 0.2em 0.4em;
+	margin-bottom: 0.8em;
+}
+
+.playerlist .player .name img {
+	height: 1.2em;
+	position: absolute;
+	right: -1.6em;
+	top: 0.3em;
+	width: 1.2em;
+}
+
+.playerlist .player .name p {
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.playerlist .player .skin img {
+	display: block;
+	height: 12em;
+	margin: 0 auto;
+	margin-bottom: 1em;
+	max-width: 100%;
+	filter: drop-shadow(0px 10px 10px #444);
+}

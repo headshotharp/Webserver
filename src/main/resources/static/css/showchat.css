@@ -1,0 +1,19 @@
+.content {
+	width: calc(100% - 22em);
+}
+
+.userinfo {
+	width: calc(100% - 22em);
+}
+
+@media ( max-width : 1200px) {
+	.userinfo {
+		width: 100%;
+	}
+	.content {
+		width: 100%;
+	}
+	.chat {
+		width: 0;
+	}
+}

@@ -1,0 +1,61 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+html, body {
+	height: 100%;
+}
+
+.spacer {
+	height: 5%;
+}
+
+.security-icon img {
+	display: block;
+	width: 300px;
+	height: auto;
+	margin: 0 auto;
+}
+
+.security-icon p {
+	color: rgb(224, 224, 224);
+	text-align: center;
+	font-size: 0.8em;
+}
+
+.security-warning {
+	background-color: rgb(235, 235, 235);
+	width: 80%;
+	margin-top: 3em;
+	margin-left: 10%;
+	border-radius: 5px;
+}
+
+.security-warning p {
+	font-size: 2em;
+	color: gray;
+	text-align: center;
+}
+
+.secure-browsers {
+	text-align:center;
+	margin-top: 3em;
+}
+
+.secure-browsers .browser {
+	display: inline-block;
+	margin: 1em;
+}
+
+.secure-browsers .browser img {
+	display: block;
+	margin: 0 auto;
+	display: inline-block;
+	max-width: 90px;
+	max-height: 90px;
+}
+
+.secure-browsers .browser p {
+	text-align: center;
+}

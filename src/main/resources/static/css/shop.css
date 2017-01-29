@@ -1,0 +1,137 @@
+.content {
+	text-align: center;
+	padding: 0;
+}
+
+.shop {
+	position: relative;
+	display: inline-block;
+	vertical-align: top;
+	width: 300px;
+	padding: 20px;
+	padding-bottom: 10px;
+	margin: 1em 4em;
+	background-color: #eee;
+}
+
+.shop h1 {
+	position: relative;
+	font-size: 1.8em;
+	padding: 10px 30px;
+	margin: 0 -30px 20px;
+	line-height: 32px;
+	text-align: center;
+	color: #fff;
+	background-color: #ad7e34;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.shop h1:before, .shop h1:after {
+	content: "";
+	position: absolute;
+	top: 100%;
+	left: 0;
+	border-width: 0 10px 10px 0;
+	border-style: solid;
+	border-color: transparent #666;
+}
+
+.shop h1:after {
+	left: auto;
+	right: 0;
+	border-width: 0 0 10px 10px;
+}
+
+.shop img {
+	display: block;
+	margin: 0 auto;
+	margin-bottom: 1em;
+	max-width: 100%;
+	filter: drop-shadow(0px 10px 10px #444);
+}
+
+.shop p {
+	font-size: 1em;
+	background-color: #eee;
+	text-align: center;
+}
+
+.shop .shop-discount {
+	position: absolute;
+	background-color: transparent;
+	display: inline-block;
+	color: #f72727;
+	transform: rotate(-10deg);
+	font-style: italic;
+	font-weight: bold;
+	text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
+	margin-left: 0.3em;
+	font-size: 0.75em;
+}
+
+.shop h2 {
+	position: relative;
+	font-size: 1.2em;
+	padding: 0 30px;
+	margin: 0 -30px 20px;
+	margin-top: 1em;
+	line-height: 32px;
+	text-align: center;
+	color: #fff;
+	background-color: #444;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.shop h2 small {
+	color: white;
+}
+
+.shop h2:before, .shop h2:after {
+	content: "";
+	position: absolute;
+	top: 100%;
+	left: 0;
+	border-width: 0 10px 10px 0;
+	border-style: solid;
+	border-color: transparent #666;
+}
+
+.shop h2:after {
+	left: auto;
+	right: 0;
+	border-width: 0 0 10px 10px;
+}
+
+.shop a, .shop a:link, .shop a:hover, .shop a:visited {
+	color: #000;
+	text-decoration: none;
+}
+
+.shop-info {
+	clear: both;
+	background-color: #eee;
+	width: 100%;
+	text-align: center;
+}
+
+.shop .how-to-use {
+	position: absolute;
+	right: 0.2em;
+	bottom: -0.3em;
+	font-size: 2em;
+}
+
+#fineprint .star {
+	position: absolute;
+	font-size: 2em;
+	font-weight: normal;
+	left: 0.1em;
+}
+
+@media ( max-width : 500px) {
+	.shop {
+		margin: 1em auto;
+	}
+}

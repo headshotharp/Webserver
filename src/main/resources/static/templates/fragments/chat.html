@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>HeadShotHarp | Replica</title>
+		<meta http-equiv="content-type" content="charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="/css/bootstrapfix.css" />
+	</head>
+	<body>
+	
+		<div th:fragment="chat" th:remove="tag">
+			<link rel="stylesheet" type="text/css" href="/css/fullchat.css" />
+			<div class="chat-items" id="chat-content">
+			</div>
+			<div class="chat-interface">
+				<input class="chat-item-send" id="chat-input-field" type="text" onkeypress="if (event.which == 13 || event.keyCode == 13) {sendChat();}" />
+			</div>
+		</div>
+
+		<script src="/webjars/jquery/2.2.1/jquery.min.js"></script>
+		<script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	</body>
+</html>

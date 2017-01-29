@@ -1,0 +1,42 @@
+path.slice {
+	stroke-width: 2px;
+}
+
+polyline {
+	opacity: .3;
+	stroke: black;
+	stroke-width: 2px;
+	fill: none;
+}
+
+.donut {
+	max-width: 100%;
+	width: 30em;
+	float: right;
+}
+
+.donut p {
+	text-align: center;
+}
+
+table p {
+	margin: 0;
+}
+
+svg text.percent {
+	fill: white;
+	text-anchor: middle;
+	font-size: 0.6em;
+}
+
+@media ( max-width : 767px) {
+	.donut {
+		width: 100%;
+	}
+}
+
+@media ( max-width : 991px) {
+	.donut {
+		float: left;
+	}
+}

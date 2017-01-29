@@ -1,0 +1,52 @@
+.progressbar {
+	position: relative;
+	width: calc(100% - 2em);
+	height: calc(2em + 6px);
+	margin-left: 1em;
+}
+
+.progressbar * {
+	z-index: 1;
+	box-sizing: content-box !important;
+}
+
+.progressbar>div {
+	position: absolute;
+	background: rgba(255, 255, 255, 0.5);
+	height: 1em;
+	width: calc(100% - 2px);
+	border: 1px solid black;
+}
+
+.progress_green {
+	background: rgba(52, 173, 78, 0.7);
+}
+
+.progress_blue {
+	background: #00cfff;
+}
+
+.progressbar>div>div {
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 1em;
+	width: 0;
+	transition: width 500ms linear;
+	border-right: 1px solid black;
+}
+
+.progressbar>.progressbarabsolute {
+	position: absolute;
+	top: calc(1em + 2px);
+	left: 50%;
+	transform: translate(-50%, 0);
+}
+
+.progressbar>.progressbarrelative {
+	position: absolute;
+	top: 0;
+	right: 0.5em;
+	z-index: 100;
+	color: red;
+}

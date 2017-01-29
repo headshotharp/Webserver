@@ -1,0 +1,166 @@
+#header {
+	position: relative;
+	width: 100%;
+	z-index: 10;
+}
+
+#header .login {
+	height: 0;
+	overflow: hidden;
+}
+
+#header .login .login-table {
+	width: 100%;
+	background-color: #ffbf00;
+	border-collapse: collapse;
+}
+
+#header .login .login-table td {
+	width: 50%;
+	vertical-align: top;
+}
+
+#header .login .login-table td:first-child {
+	border-right: 2px solid #000;
+}
+
+#header .login .login-table input[type=submit] {
+	box-sizing: content-box;
+	background-color: #ccc;
+}
+
+#header .login .login-table input[type=checkbox] {
+	display: none;
+}
+
+#header .login .login-table input, .login-table .login-form .toggle-register-reset-button
+	{
+	width: 15em;
+	background-color: #fff;
+	height: 1.5em;
+	border: 1px solid #000;
+	margin: 0.2em;
+	padding: 0;
+}
+
+#header .login .login-table .register-form {
+	float: right;
+	display: block;
+	padding: 0.5em 0;
+}
+
+#header .login .login-table .reset-form {
+	float: right;
+	display: none;
+	padding: 0.5em 0;
+}
+
+#header .login .login-table .login-form {
+	float: left;
+	padding: 0.5em 0;
+}
+
+#header .login .login-table .login-form .toggle-register-reset-button {
+	display: inline-block;
+	background-color: #ccc;
+	text-align: center;
+	margin-top: calc(2.1em + 2px);
+}
+
+#header .login .login-table .login-form .toggle-register-reset-button p
+	{
+	padding: 0.25em 0;
+}
+
+#header .login .login-table .login-form .toggle-register-reset-button .toggle-register
+	{
+	display: none;
+}
+
+#header .login .login-table .login-form .toggle-register-reset-button .toggle-reset
+	{
+	display: block;
+}
+
+#header .login .login-table .login-form .toggle-register-reset:checked 
+	~ .toggle-register {
+	display: block;
+}
+
+#header .login .login-table .login-form .toggle-register-reset:checked 
+	~ .toggle-reset {
+	display: none;
+}
+
+#header .menu {
+	position: absolute;
+	width: 100%;
+	background-color: #34934e;
+	height: 3em;
+	list-style: none;
+	box-shadow: 0 0 0.2em #000;
+}
+
+#header .menu .menu-item {
+	font-size: 1.4em;
+	text-align: center;
+	float: left;
+	cursor: pointer;
+}
+
+#header .menu .menu-item:hover {
+	background-color: #006400;
+}
+
+#header .menu .menu-item input[type=checkbox] {
+	display: none;
+}
+
+#header .menu .menu-item .menu-item-label {
+	cursor: pointer;
+}
+
+#header .menu .menu-item .menu-item-label p:hover {
+	background-color: #006400;
+}
+
+#header .menu .menu-item .menu-item-checkbox:checked ~ .menu-item-label p,
+	#header .menu .menu-item .menu-item-checkbox:checked ~ p {
+	background-color: #006400;
+}
+
+#header .menu .menu-item .menu-item-checkbox:checked ~ .submenu {
+	height: 100%;
+}
+
+#header .menu .menu-item p {
+	padding: 0.5em 1em;
+}
+
+#header .menu .menu-item:first-child {
+	margin-left: 1em;
+}
+
+#header .menu .menu-item:last-child {
+	margin-right: 1em;
+}
+
+#header .menu .menu-item-right {
+	float: right;
+}
+
+#header .menu .submenu {
+	position: relative;
+	overflow: hidden;
+	height: 0;
+	list-style: none;
+	background-color: #006400;
+}
+
+#header .menu .submenu .submenu-item {
+	font-size: 0.8em;
+}
+
+#header .menu .submenu .submenu-item:hover {
+	background-color: #34934e;
+}

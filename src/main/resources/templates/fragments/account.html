@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>HeadShotHarp | Replica</title>
+<meta http-equiv="content-type" content="charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css"
+	href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="/css/bootstrapfix.css" />
+</head>
+<body>
+
+	<div th:remove="tag" th:fragment="account">
+		<link rel="stylesheet" type="text/css" href="/css/account.css" />
+		<link rel="stylesheet" type="text/css" href="/css/progressbar.css" />
+		<div class="account bg">
+			<a class="btn btn-sm btn-default accountsettings" href="/settings">Einstellungen</a>
+			<br /> <br /> <img class="playerskin"
+				th:src="'/skins/' + ${player.name} + '/body.png'" />
+			<div class="info">
+				<table>
+					<tr>
+						<td>Name:</td>
+						<td th:text="${player.name}"></td>
+					</tr>
+					<tr>
+						<td>Abgebaute Blöcke:</td>
+						<td th:inline="text">[[${player.getBlockBreakFormat()}]] <b>&or;</b></td>
+					</tr>
+					<tr>
+						<td>Platzierte Blöcke:</td>
+						<td th:inline="text">[[${player.getBlockPlaceFormat()}]] <b>&and;</b></td>
+					</tr>
+					<tr>
+						<td>Guthaben:</td>
+						<td th:inline="text">[[${player.getMoneyFormat()}]] &real;$</td>
+					</tr>
+					<tr>
+						<td>Mitglied seit:</td>
+						<td th:text="${player.creation_date.format(T(de.headshotharp.web.util.DateTime).FORMAT_HUMAN_READABLE_DATE)}"></td>
+					</tr>
+				</table>
+			</div>
+			<hr />
+			<br />
+			<p>
+				Abgebaute Blöcke heute: <b id="userblockbreaktoday">0</b>
+			</p>
+			<div id="progressbar_break" class="progressbar">
+				<div>
+					<div class="progress_green" style="width: 0%;"></div>
+				</div>
+				<p class="progressbarrelative">0%</p>
+				<p class="progressbarabsolute">
+					<b>0</b> von <b>1000</b>
+				</p>
+			</div>
+			<p>
+				Platzierte Blöcke heute: <b id="userblockplacetoday">0</b>
+			</p>
+			<div id="progressbar_place" class="progressbar">
+				<div>
+					<div class="progress_blue" style="width: 0%;"></div>
+				</div>
+				<p class="progressbarrelative">0%</p>
+				<p class="progressbarabsolute">
+					<b>0</b> von <b>1000</b>
+				</p>
+			</div>
+			<br />
+			<hr />
+			<div id="stats" th:utext="${svg}" />
+		</div>
+	</div>
+
+	<script src="/webjars/jquery/2.2.1/jquery.min.js"></script>
+	<script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</body>
+</html>

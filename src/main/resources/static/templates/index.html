@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>HeadShotHarp | Minecraft</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+		<link rel="shortcut icon" href="/favicon.png" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="/css/bootstrapfix.css" />
+		<link rel="stylesheet" type="text/css" href="/css/main.css" />
+		<link th:if="${nochat == null and loggedin == true}" rel="stylesheet" type="text/css" th:href="'/css/showchat.css'" />
+		<link th:unless="${nochat == null and loggedin == true}" rel="stylesheet" type="text/css" th:href="'/css/hidechat.css'" />
+		<link rel="stylesheet" type="text/css" th:if="${specialstyle != null}" th:href="'/css/' + ${specialstyle}" />
+	</head>
+	<body>
+		<div th:if="${loggedin} == true"><div th:replace="fragments/navbar :: navbarlogin" /></div>
+		<div th:if="${loggedin} == false"><div th:replace="fragments/navbar :: navbarlogout" /></div>
+		<div class="userinfo">
+			<ul>
+				<li class="username" th:if="${loggedin} == true">
+					<a href="/account"><p th:text="${player.name}"></p></a>
+				</li>
+				<li class="brokenblocks desktop-only" th:if="${loggedin} == true">
+					<p th:text="${player.getBlockBreakFormat()}"></p><p><b>&or;</b></p>
+				</li>
+				<li class="placedblocks desktop-only" th:if="${loggedin} == true">
+					<p th:text="${player.getBlockPlaceFormat()}"></p><p><b>&and;</b></p>
+				</li>
+				<li class="money desktop-only" th:if="${loggedin} == true">
+					<a href="/shop"><p th:text="${player.getMoneyFormat()}">192.200</p><p>&real;$</p></a>
+				</li>
+				<li class="right">
+					<a href="/playerlist"><img id="serveronlineimg" th:src="'/img/server' + (${server.online} == true ? 'online' : 'offline') + '.png'" /><p id="onlineamount" th:text="${server.onlinePlayers.size()}">0</p><div id="serverstatus" class="statustooltip desktop-only" th:utext="${server.toString()}">Test</div></a>
+				</li>
+				<li class="right" th:if="${loggedin == true AND player.giftReady} == true">
+					<a href="/gift"><img src="/img/gift.png" /></a>
+				</li>
+				<li class="right" th:if="${loggedin == true AND player.isManager() == true}">
+					<a href="/admin"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
+				</li>
+			</ul>
+		</div>
+		<div class="blurbackground" />
+		<div class="whitebackground" />
+		<div class="content">
+			<div th:if="${content == null}" th:remove="tag">
+				<div th:replace="@{'fragments/' + ${template}} :: ${template}" />
+			</div>
+			<div th:if="${content != null}" th:remove="${bg != null ? 'none' : 'tag'}" th:attr="class=${bg != null ? 'bg' : ''}">
+				<div th:if="${content != null}" th:remove="tag" th:utext="${content}">
+				</div>
+			</div>
+		</div>
+		<div class="chat" th:if="${nochat == null and loggedin == true}">
+			<div class="chat-items" id="chat-content">
+			</div>
+			<div class="chat-interface">
+				<input class="chat-item-send" id="chat-input-field" type="text" onkeypress="if (event.which == 13 || event.keyCode == 13) {sendChat();}" />
+			</div>
+		</div>
+		<script src="/webjars/jquery/2.2.1/jquery.min.js"></script>
+		<script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<script src="/js/onlinelist.js"></script>
+		<script th:utext="${onlinelistscript}"></script>
+		<script th:if="${loggedin} == true" src="/js/chat.js"></script>
+		<script th:each="script : ${srcscripts}" th:attr="src=${script}"></script>
+		<script th:each="script : ${scripts}" th:utext="${script}"></script>
+		<script src="/js/ios-web-app.js"></script>
+		<script src="/js/detectms.js"></script>
+	</body>
+</html>

@@ -1,0 +1,46 @@
+.account {
+	font-size: 1.2em;
+}
+
+.account .info {
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+	padding-left: 2em;
+	font-size: 1.1em;
+}
+
+.account .info td {
+	padding: 0 0.5em;
+}
+
+.account .accountsettings {
+	float: right;
+}
+
+}
+.account .accountsettings {
+	
+}
+
+@media ( max-width : 767px) {
+	.account .playerskin {
+		display: block;
+		margin: 0 auto;
+	}
+	.account .info {
+		padding-top: 1em;
+		padding-left: 0;
+		width: 100%;
+		padding-left: 0;
+	}
+	.account .info table {
+		margin: 0 auto;
+	}
+}
+
+@media ( min-width : 768px) {
+	.account .playerskin {
+		margin-left: 3em;
+	}
+}

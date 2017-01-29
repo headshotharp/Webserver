@@ -1,0 +1,70 @@
+.ranking_wrapper_outer {
+	position: relative;
+	height: 50%;
+	width: 20em;
+}
+
+.ranking_wrapper_outer .ranking_wrapper {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	height: 16em;
+	width: 15em;
+	margin: 0 auto;
+	text-align: center;
+	background-color: rgba(255, 255, 255, 0.85);
+	transform: translate(-50%, -50%);
+}
+
+.ranking_wrapper_outer .ranking_wrapper .bar_wrapper {
+	display: inline-block;
+	width: 3em;
+	height: 100%;
+	margin: 0 0.8em;
+	background-color: #ddd;
+	background-position: bottom;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+.ranking_wrapper_outer .ranking_wrapper .bar_wrapper .bar_background {
+	position: relative;
+	height: calc(100% - 3.5em);
+	background-color: #ccc;
+}
+
+.ranking_wrapper_outer .ranking_wrapper .bar_wrapper.first .bar_background
+	{
+	background-color: #006400;
+}
+
+.ranking_wrapper_outer .ranking_wrapper .bar_wrapper.second .bar_background
+	{
+	background-color: #AD7E34;
+}
+
+.ranking_wrapper_outer .ranking_wrapper .bar_wrapper.third .bar_background
+	{
+	background-color: #AD3734;
+}
+
+.ranking_wrapper_outer .ranking_wrapper .bar_wrapper .bar_background .bar
+	{
+	height: 0%;
+	background-color: #bbb;
+}
+
+.ranking_wrapper_outer .ranking_wrapper .bar_wrapper .bar_background .count
+	{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	color: #fff;
+	z-index: 300;
+	line-height: 3em;
+	font-weight: bold;
+	text-shadow: 1px 1px #000;
+	transform: translateX(-50%) translateY(-50%) rotate(-90deg);
+	font-family: Inconsolata, Consolas, Deja Vu Sans Mono, Droid Sans Mono,
+		Proggy, Monofur, Profont, Monaco, Andale Mono, Courier;
+}
