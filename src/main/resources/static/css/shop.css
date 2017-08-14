@@ -123,6 +123,11 @@
 	font-size: 2em;
 }
 
+.shop ul {
+	display: inline-block;
+	text-align:left;
+}
+
 #fineprint .star {
 	position: absolute;
 	font-size: 2em;

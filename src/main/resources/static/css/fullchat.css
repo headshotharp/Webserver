@@ -32,6 +32,10 @@ body {
 	width: 100%;
 }
 
+.content .chat-items .chat-item table.chat-item-info tr td:first-child {
+	width: 0;
+}
+
 .content .chat-items .chat-item img {
 	width: 1.2em;
 	height: 1.2em;
@@ -49,7 +53,7 @@ body {
 }
 
 .content .chat-items .chat-item .chat-item-text p {
-	width: 20em;
+	width: 100%;
 	white-space: pre-wrap; /* CSS3 */
 	white-space: -moz-pre-wrap; /* Firefox */
 	white-space: -pre-wrap; /* Opera <7 */

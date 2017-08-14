@@ -15,8 +15,8 @@
 		<link rel="stylesheet" type="text/css" th:if="${specialstyle != null}" th:href="'/css/' + ${specialstyle}" />
 	</head>
 	<body>
-		<div th:if="${loggedin} == true"><div th:replace="fragments/navbar :: navbarlogin" /></div>
-		<div th:if="${loggedin} == false"><div th:replace="fragments/navbar :: navbarlogout" /></div>
+		<div th:if="${loggedin} == true"><div th:replace="fragments/navbar :: navbarlogin"></div></div>
+		<div th:if="${loggedin} == false"><div th:replace="fragments/navbar :: navbarlogout"></div></div>
 		<div class="userinfo">
 			<ul>
 				<li class="username" th:if="${loggedin} == true">
@@ -42,11 +42,12 @@
 				</li>
 			</ul>
 		</div>
-		<div class="blurbackground" />
-		<div class="whitebackground" />
+		<div class="blurbackground"></div>
+		<div class="whitebackground"></div>
 		<div class="content">
 			<div th:if="${content == null}" th:remove="tag">
-				<div th:replace="@{'fragments/' + ${template}} :: ${template}" />
+				<!-- <div th:replace="@{'fragments/' + ${template}} :: ${template}"></div> -->
+				<div th:replace="'fragments/' + ${template} :: ${template}"></div>
 			</div>
 			<div th:if="${content != null}" th:remove="${bg != null ? 'none' : 'tag'}" th:attr="class=${bg != null ? 'bg' : ''}">
 				<div th:if="${content != null}" th:remove="tag" th:utext="${content}">

@@ -1,5 +1,7 @@
 package de.headshotharp.web.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -9,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import de.headshotharp.web.auth.RegistrationStatus;
 import de.headshotharp.web.controller.type.ControllerData;
+import de.headshotharp.web.data.type.EnchantmentItemPrice;
+import de.headshotharp.web.data.type.ItemShopItemPrice;
 import de.headshotharp.web.data.type.Player;
 import de.headshotharp.web.data.type.Timeline;
 import de.headshotharp.web.util.DateTime;
@@ -58,6 +62,50 @@ public class AccountController extends DefaultController
 		else
 		{
 			cd.getModel().addAttribute("bg", "");
+			cd.getModel().addAttribute("content", "<p>Du musst eingeloggt sein, um den Accountbereich zu betreten.</p>");
+		}
+		return "index";
+	}
+
+	@GetMapping("/inventory")
+	public String inventory(@ModelAttribute("ControllerData") ControllerData cd)
+	{
+		cd.getModel().addAttribute("bg", "");
+		if (cd.getAuthentication().isLoggedIn())
+		{
+			StringBuilder html = new StringBuilder();
+			html.append("");
+			List<ItemShopItemPrice> itemShopItems = cd.getDataProvider().getBoughtItemShopItems(cd.getAuthentication().getPlayer().id);
+			List<EnchantmentItemPrice> enchantments = cd.getDataProvider().getBoughtShopEnchantmentItems(cd.getAuthentication().getPlayer().id);
+			if (itemShopItems.size() == 0 && enchantments.size() == 0)
+			{
+				html.append("<p>Du hast derzeit keine Items oder Enchantments in deinem Inventar.</p>");
+			}
+			else
+			{
+				if (itemShopItems.size() > 0)
+				{
+					html.append("<h3>Gekaufte Items:</h3><ul>");
+					for (ItemShopItemPrice item : itemShopItems)
+					{
+						html.append("<li>" + item.getName() + "</li>");
+					}
+					html.append("</ul>");
+				}
+				if (enchantments.size() > 0)
+				{
+					html.append("<h3>Gekaufte Enchantments:</h3><ul>");
+					for (EnchantmentItemPrice item : enchantments)
+					{
+						html.append("<li>" + item.getEnch().getNormalName() + "</li>");
+					}
+					html.append("</ul>");
+				}
+			}
+			cd.getModel().addAttribute("content", html.toString());
+		}
+		else
+		{
 			cd.getModel().addAttribute("content", "<p>Du musst eingeloggt sein, um den Accountbereich zu betreten.</p>");
 		}
 		return "index";

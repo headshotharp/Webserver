@@ -12,6 +12,7 @@ import java.util.Properties;
 
 import com.mysql.jdbc.Statement;
 
+import de.headshotharp.web.Config;
 import de.headshotharp.web.auth.AuthPlayer;
 import de.headshotharp.web.auth.Authentication;
 import de.headshotharp.web.auth.AuthenticationStatus;
@@ -19,7 +20,9 @@ import de.headshotharp.web.auth.PermissionsGroup;
 import de.headshotharp.web.auth.RegistrationStatus;
 import de.headshotharp.web.data.type.Chat;
 import de.headshotharp.web.data.type.ChatOrigin;
+import de.headshotharp.web.data.type.EnchantmentItem;
 import de.headshotharp.web.data.type.EnchantmentItemPrice;
+import de.headshotharp.web.data.type.ItemShopItemPrice;
 import de.headshotharp.web.data.type.News;
 import de.headshotharp.web.data.type.News.NewsType;
 import de.headshotharp.web.data.type.Player;
@@ -1113,6 +1116,250 @@ public class DataProvider implements Closeable
 		return ench;
 	}
 
+	public List<EnchantmentItem> getEnchantmentItemsForOrder(int id)
+	{
+		List<EnchantmentItem> list = new ArrayList<EnchantmentItem>();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try
+		{
+			String sql = "select e.id, e.bukkitname, si.level from shopitemenchantments as si join enchantments as e on e.id = si.enchantmentid where si.shopitemid =" + id;
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while (rs.next())
+			{
+				list.add(new EnchantmentItem(rs.getInt("id"), rs.getString("bukkitname"), rs.getInt("level")));
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			list = null;
+			requestNewConnection();
+		}
+		finally
+		{
+			if (rs != null) try
+			{
+				rs.close();
+			}
+			catch (Exception e)
+			{
+			}
+			if (stmt != null) try
+			{
+				stmt.close();
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		return list;
+	}
+
+	public ItemShopItemPrice getItemShopItem(int id)
+	{
+		int discount = getEnchantmentDiscount();
+		ItemShopItemPrice item = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try
+		{
+			String sql = "SELECT id, name, price, mc_item FROM shopitems WHERE id = " + id;
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			if (rs.next())
+			{
+				item = new ItemShopItemPrice(rs.getInt("id"), rs.getString("name"), rs.getString("mc_item"), rs.getInt("price"), discount);
+				item.setEnchantmentItems(getEnchantmentItemsForOrder(item.getId()));
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			item = null;
+			requestNewConnection();
+		}
+		finally
+		{
+			if (rs != null) try
+			{
+				rs.close();
+			}
+			catch (Exception e)
+			{
+			}
+			if (stmt != null) try
+			{
+				stmt.close();
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		return item;
+	}
+
+	public List<ItemShopItemPrice> getBoughtItemShopItems(int userid)
+	{
+		int discount = getEnchantmentDiscount();
+		List<ItemShopItemPrice> list = new ArrayList<ItemShopItemPrice>();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ItemShopItemPrice tmp;
+		try
+		{
+			String sql = "SELECT si.id, si.name, si.price, si.mc_item FROM shopitemshop AS sis JOIN shopitems AS si ON si.id = sis.itemid WHERE used = 0 AND sis.userid = " + userid;
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while (rs.next())
+			{
+				tmp = new ItemShopItemPrice(rs.getInt("id"), rs.getString("name"), rs.getString("mc_item"), rs.getInt("price"), discount);
+				tmp.setEnchantmentItems(getEnchantmentItemsForOrder(tmp.getId()));
+				list.add(tmp);
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			list = null;
+			requestNewConnection();
+		}
+		finally
+		{
+			if (rs != null) try
+			{
+				rs.close();
+			}
+			catch (Exception e)
+			{
+			}
+			if (stmt != null) try
+			{
+				stmt.close();
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		return list;
+	}
+
+	public List<ItemShopItemPrice> getItemShopItems()
+	{
+		int discount = getEnchantmentDiscount();
+		List<ItemShopItemPrice> list = new ArrayList<ItemShopItemPrice>();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		ItemShopItemPrice tmp;
+		try
+		{
+			String sql = "SELECT id, name, price, mc_item FROM shopitems";
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while (rs.next())
+			{
+				tmp = new ItemShopItemPrice(rs.getInt("id"), rs.getString("name"), rs.getString("mc_item"), rs.getInt("price"), discount);
+				tmp.setEnchantmentItems(getEnchantmentItemsForOrder(tmp.getId()));
+				list.add(tmp);
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			list = null;
+			requestNewConnection();
+		}
+		finally
+		{
+			if (rs != null) try
+			{
+				rs.close();
+			}
+			catch (Exception e)
+			{
+			}
+			if (stmt != null) try
+			{
+				stmt.close();
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		return list;
+	}
+
+	public void buyItemShopItem(int userid, int itemid)
+	{
+		PreparedStatement stmt = null;
+		try
+		{
+			String sql = "INSERT INTO shopitemshop (userid, itemid) VALUES (?, ?);";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, userid);
+			stmt.setInt(2, itemid);
+			stmt.executeUpdate();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			requestNewConnection();
+		}
+		finally
+		{
+			if (stmt != null) try
+			{
+				stmt.close();
+			}
+			catch (Exception e)
+			{
+			}
+		}
+	}
+
+	public List<EnchantmentItemPrice> getBoughtShopEnchantmentItems(int userid)
+	{
+		int discount = getEnchantmentDiscount();
+		List<EnchantmentItemPrice> list = new ArrayList<EnchantmentItemPrice>();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try
+		{
+			String sql = "SELECT e.id, e.bukkitname, e.price, e.category FROM enchantmentshop AS es JOIN enchantments AS e ON e.id = es.itemid WHERE es.used = 0 AND es.userid = " + userid;
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			while (rs.next())
+			{
+				list.add(new EnchantmentItemPrice(rs.getInt("id"), rs.getString("bukkitname"), rs.getInt("price"), rs.getInt("category"), discount));
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			list = null;
+			requestNewConnection();
+		}
+		finally
+		{
+			if (rs != null) try
+			{
+				rs.close();
+			}
+			catch (Exception e)
+			{
+			}
+			if (stmt != null) try
+			{
+				stmt.close();
+			}
+			catch (Exception e)
+			{
+			}
+		}
+		return list;
+	}
+
 	public List<EnchantmentItemPrice> getShopEnchantmentItems()
 	{
 		int discount = getEnchantmentDiscount();
@@ -2075,6 +2322,42 @@ public class DataProvider implements Closeable
 		return getPlayerListFromSQL(sql);
 	}
 
+	public int getBlockBreakMonthFromDb()
+	{
+		try
+		{
+			return Integer.parseInt(getServerStatusValue("blockbreakmonth"));
+		}
+		catch (NumberFormatException e)
+		{
+			return -1;
+		}
+	}
+
+	public int getBlockPlaceMonthFromDb()
+	{
+		try
+		{
+			return Integer.parseInt(getServerStatusValue("blockplacemonth"));
+		}
+		catch (NumberFormatException e)
+		{
+			return -1;
+		}
+	}
+
+	public void setBlockBreakMonthDb(int value)
+	{
+		setServerStatusValue("blockbreakmonth", "" + value);
+		setServerStatusValue("blockbreakmonthbonus", "" + Config.getMonthBonus(value));
+	}
+
+	public void setBlockPlaceMonthDb(int value)
+	{
+		setServerStatusValue("blockplacemonth", "" + value);
+		setServerStatusValue("blockplacemonthbonus", "" + Config.getMonthBonus(value));
+	}
+
 	public void updateUserStatus(int userid, PlayerStatus status)
 	{
 		PreparedStatement stmt = null;
@@ -2199,18 +2482,29 @@ public class DataProvider implements Closeable
 	 */
 	public String getServerUptime()
 	{
-		String uptime = "";
+		return Utils.germanizeUptimeString(getServerStatusValue("uptime"));
+	}
+
+	/**
+	 * returns value as String for table serverstatus where status = key
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public String getServerStatusValue(String key)
+	{
+		String value = "";
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try
 		{
 			String sql = "SELECT value FROM serverstatus WHERE status = ?";
 			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, "uptime");
+			stmt.setString(1, key);
 			rs = stmt.executeQuery();
 			if (rs.next())
 			{
-				uptime = Utils.germanizeUptimeString(rs.getString("value"));
+				value = rs.getString("value");
 			}
 		}
 		catch (SQLException e)
@@ -2235,7 +2529,41 @@ public class DataProvider implements Closeable
 			{
 			}
 		}
-		return uptime;
+		return value;
+	}
+
+	/**
+	 * updates serverstatus table
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public void setServerStatusValue(String key, String value)
+	{
+		PreparedStatement stmt = null;
+		try
+		{
+			String sql = "UPDATE serverstatus SET value = ? WHERE status = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, value);
+			stmt.setString(2, key);
+			stmt.executeUpdate();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			requestNewConnection();
+		}
+		finally
+		{
+			if (stmt != null) try
+			{
+				stmt.close();
+			}
+			catch (Exception e)
+			{
+			}
+		}
 	}
 
 	public AuthenticationStatus checkCredentials(String userid, String username, String password)

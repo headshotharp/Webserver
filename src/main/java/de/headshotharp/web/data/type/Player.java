@@ -204,7 +204,7 @@ public class Player implements Comparable<Player>
 		str.append("var data = [");
 		for (Player p : list)
 		{
-			str.append("{id:" + p.id + ",name:\"" + p.name + "\",prefix:\"" + p.group.getHtmlPrefixVisibleDesktop() + "\",block_break:" + p.block_break + ",block_place:" + p.block_place + ",date:\"" + p.creation_date.format(DateTimeFormat.FORMAT_SQL_TIMESTAMP.getSimpleDateFormat()) + "\"},");
+			str.append("{id:" + p.id + ",name:\"" + p.name + "\",prefix:\"" + p.group.getHtmlPrefixVisibleDesktop() + "\",block_break:" + p.block_break + ",block_place:" + p.block_place + ",money:" + p.money + ",date:\"" + p.creation_date.format(DateTimeFormat.FORMAT_SQL_TIMESTAMP.getSimpleDateFormat()) + "\"},");
 		}
 		str.append("];");
 		return str.toString();

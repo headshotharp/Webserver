@@ -10,7 +10,7 @@ function formatDate(str) {
 }
 
 function createTable(data) {
-	var html = "<tr><th><p><a href='javascript:void(0);' onClick='sortName();'>Name</a></p></th><th><p><a href='javascript:void(0);' onClick='sortBreak();'>Abgebaute Blöcke</a></p></th><th><p><a href='javascript:void(0);' onClick='sortPlace();'>Platzierte Blöcke</a></p></th><th><p><a href='javascript:void(0);' onClick='sortDate();'>Beitrittsdatum</a></p></th></tr>";
+	var html = "<tr><th><p><a href='javascript:void(0);' onClick='sortName();'>Name</a></p></th><th><p><a href='javascript:void(0);' onClick='sortBreak();'>Abgebaute Blöcke</a></p></th><th><p><a href='javascript:void(0);' onClick='sortPlace();'>Platzierte Blöcke</a></p></th><th><p><a href='javascript:void(0);' onClick='sortMoney();'>Guthaben</a></p></th><th><p><a href='javascript:void(0);' onClick='sortDate();'>Beitrittsdatum</a></p></th></tr>";
 	for (var i = 0; i < data.length; i++) {
 		html += getRow(data[i]);
 	}
@@ -27,7 +27,9 @@ function getRow(data) {
 			+ numberWithCommas(data.block_break)
 			+ " <b>&or;</b></p></td><td class='placed'><p>"
 			+ numberWithCommas(data.block_place)
-			+ " <b>&and;</b></p></td><td class='joined'><p>"
+			+ " <b>&and;</b></p></td><td class='money'><p>"
+			+ (data.money<0? "<b><font color='red'>" + numberWithCommas(data.money) + " &real;$</font></b>" : numberWithCommas(data.money) + " &real;$")
+			+ "</p></td><td class='joined'><p>"
 			+ formatDate(data.date) + "</p></td></tr>";
 }
 

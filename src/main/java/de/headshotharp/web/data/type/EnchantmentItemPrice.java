@@ -60,7 +60,7 @@ public class EnchantmentItemPrice extends EnchantmentItem
 		{
 			buy = "Für " + CommonUtils.decimalDots(getPrice()) + " " + Config.VALUE_CURRENCY_HTML + " kaufen";
 		}
-		return "<div class='shop'><h1>" + getEnch().getNormalName() + disc + "</h1><img " + style + "src='/img/mc_enchantement_book.png'><p>" + getEnch().getGermanDescription() + treasure + "</p><a href='/shop/buy/" + getId() + "'><h2>" + buy + "</h2></a><a class='how-to-use' href='#fineprint'>*</a></div>";
+		return "<div class='shop'><h1>" + getEnch().getNormalName() + disc + "</h1><img " + style + "src='/img/mc_enchantement_book.png'><p>" + getEnch().getGermanDescription() + treasure + "</p><a href='/shop/enchantments/buy/" + getId() + "'><h2>" + buy + "</h2></a><a class='how-to-use' href='#fineprint'>*</a></div>";
 	}
 
 	public static String toHtml(List<EnchantmentItemPrice> list)

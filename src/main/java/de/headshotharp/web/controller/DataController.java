@@ -72,6 +72,26 @@ public class DataController
 			block_break += p.getBlockBreakThisMonth(dp);
 			block_place += p.getBlockPlaceThisMonth(dp);
 		}
+		dp.close();
+		return block_break + Config.VALUE_SPLIT + block_place;
+	}
+
+	@RequestMapping("/server/blockbreakplacemonth/update")
+	@ResponseBody
+	String serverBlockBreakPlaceMonthUpdate()
+	{
+		DataProvider dp = new DataProvider();
+		List<Player> list = dp.getPlayerListActive();
+		int block_break = 0;
+		int block_place = 0;
+		for (Player p : list)
+		{
+			block_break += p.getBlockBreakThisMonth(dp);
+			block_place += p.getBlockPlaceThisMonth(dp);
+		}
+		dp.setBlockBreakMonthDb(block_break);
+		dp.setBlockPlaceMonthDb(block_place);
+		dp.close();
 		return block_break + Config.VALUE_SPLIT + block_place;
 	}
 

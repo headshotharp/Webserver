@@ -39,6 +39,16 @@ public class Config
 		return 500 * (new Random().nextInt(5) + 3);
 	}
 
+	// month block bonus
+	public static int getMonthBonus(int blockmonth)
+	{
+		if (blockmonth < 100000) return 0;
+		else if (blockmonth < 250000) return 20;
+		else if (blockmonth < 500000) return 40;
+		else if (blockmonth < 1000000) return 60;
+		return 80;
+	}
+
 	// WEB
 	public static int MAX_PLAYER_ONLINE_LIST = 8;
 
@@ -53,6 +63,6 @@ public class Config
 	// COLORS
 	public static Color[] COLORS_BASE_DEFAULT = new Color[]
 	{ /* LIGHT */new Color(244, 170, 66)/* orange */, new Color(66, 134, 244)/* blue */, new Color(244, 220, 66)/* yellow */, new Color(244, 89, 66)/* red */, new Color(51, 206, 64)/* green */, new Color(168, 117, 235)/* lila */, /* DARK */
-	new Color(194, 123, 23)/* orange */, new Color(37, 97, 194)/* blue */, new Color(204, 180, 24)/* yellow */, new Color(207, 45, 21)/* red */, new Color(17, 158, 29)/* green */, new Color(105, 42, 189)/* lila */ };
+			new Color(194, 123, 23)/* orange */, new Color(37, 97, 194)/* blue */, new Color(204, 180, 24)/* yellow */, new Color(207, 45, 21)/* red */, new Color(17, 158, 29)/* green */, new Color(105, 42, 189)/* lila */ };
 	public static Color COLOR_REST_GRAY = new Color(153, 153, 153);
 }
