@@ -15,6 +15,8 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -60,13 +62,13 @@
 			<version>3.5.17</version>
 		</dependency>
 		<dependency>
-			<groupId>de.headshotharp</groupId>
+			<groupId>de.headshotharp.web</groupId>
 			<artifactId>CommonUtils</artifactId>
 			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>de.headshotharp</groupId>
-			<artifactId>EnchantmentHelper</artifactId>
+			<groupId>de.headshotharp.bukkit</groupId>
+			<artifactId>EnchantmentHelper-1.10.2</artifactId>
 			<version>1.0</version>
 		</dependency>
 		<dependency>
@@ -83,47 +85,13 @@
 				<artifactId>maven-install-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>install-external-1</id>
-						<phase>
-							clean
-						</phase>
-						<configuration>
-							<file>F:/Data/Documents/Libraries/CommonUtils.jar</file>
-							<repositoryLayout>default</repositoryLayout>
-							<groupId>de.headshotharp</groupId>
-							<artifactId>CommonUtils</artifactId>
-							<version>1.0</version>
-							<packaging>jar</packaging>
-							<generatePom>true</generatePom>
-						</configuration>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>install-external-2</id>
+						<id>install-craftbukkit</id>
 						<phase>clean</phase>
 						<configuration>
 							<file>F:/Data/Documents/Libraries/craftbukkit-1.10.2-R0.1-SNAPSHOT-latest.jar</file>
 							<repositoryLayout>default</repositoryLayout>
 							<groupId>org.bukkit</groupId>
 							<artifactId>craftbukkit-1.10.2-R0.1-SNAPSHOT-latest</artifactId>
-							<version>1.0</version>
-							<packaging>jar</packaging>
-							<generatePom>true</generatePom>
-						</configuration>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>install-external-3</id>
-						<phase>clean</phase>
-						<configuration>
-							<file>F:/Data/Documents/Libraries/EnchantmentHelper-1.10.2.jar</file>
-							<repositoryLayout>default</repositoryLayout>
-							<groupId>de.headshotharp</groupId>
-							<artifactId>EnchantmentHelper</artifactId>
 							<version>1.0</version>
 							<packaging>jar</packaging>
 							<generatePom>true</generatePom>
