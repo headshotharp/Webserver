@@ -23,25 +23,20 @@ import de.headshotharp.web.auth.PermissionsGroup;
 import de.headshotharp.web.data.DataProvider;
 import de.headshotharp.web.data.type.Player;
 
-public class Utils
-{
-	public static String cleanHtml(String html, Whitelist whitelist)
-	{
+public class Utils {
+	public static String cleanHtml(String html, Whitelist whitelist) {
 		return Jsoup.clean(html, whitelist).replace("\n", "");
 	}
 
-	public static String escapeHtml(String in)
-	{
+	public static String escapeHtml(String in) {
 		return StringEscapeUtils.escapeHtml(in);
 	}
 
-	public static String cleanNewsMsg(String msg)
-	{
+	public static String cleanNewsMsg(String msg) {
 		return cleanHtml(CommonUtils.nl2br(msg), Config.WHITELIST_BLOG_DEFAULT);
 	}
 
-	public static String germanizeUptimeString(String in)
-	{
+	public static String germanizeUptimeString(String in) {
 		return in.replace("days", "Tagen").replace("day", "Tag");
 	}
 
@@ -54,54 +49,42 @@ public class Utils
 	 * @param file
 	 * @return
 	 */
-	public static String copyPermissionsIntoDatabase(DataProvider dp, String file)
-	{
+	public static String copyPermissionsIntoDatabase(DataProvider dp, String file) {
 		StringBuilder str = new StringBuilder();
 		str.append("<ul>");
-		try (BufferedReader br = new BufferedReader(new FileReader(file)))
-		{
+		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
 			String line;
 			String username = "";
 			String group = "";
 			boolean ok = false;
-			while ((line = br.readLine()) != null)
-			{
-				if (line.equals("users:"))
-				{
+			while ((line = br.readLine()) != null) {
+				if (line.equals("users:")) {
 					ok = true;
 					continue;
+				} else if (line.equals("groups:")) {
+					if (ok)
+						break;
 				}
-				else if (line.equals("groups:"))
-				{
-					if (ok) break;
-				}
-				if (ok)
-				{
-					if (line.equals("    group:")) continue;
-					if (line.startsWith("    -"))
-					{
+				if (ok) {
+					if (line.equals("    group:"))
+						continue;
+					if (line.startsWith("    -")) {
 						group = line.substring(6, line.length());
 						PermissionsGroup pg = PermissionsGroup.byBukkitName(group);
 						Player player = dp.getPlayerByName(username);
-						if (player != null)
-						{
+						if (player != null) {
 							dp.setPlayerPermissionsGroup(player.id, pg);
-							str.append("<li>Set '" + player.name + " (" + player.id + ") GROUP '" + pg.toString() + "'</li>");
-						}
-						else
-						{
+							str.append("<li>Set '" + player.name + " (" + player.id + ") GROUP '" + pg.toString()
+									+ "'</li>");
+						} else {
 							str.append("<li>Player '" + username + "' not found</li>");
 						}
-					}
-					else
-					{
+					} else {
 						username = line.substring(2, line.length() - 1);
 					}
 				}
 			}
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			str.append("ERROR: " + e.getMessage());
 		}
 		str.append("</ul>");
@@ -118,16 +101,14 @@ public class Utils
 	 * @param clean
 	 * @return
 	 */
-	public static String downloadFullUserImage(String username, boolean clean)
-	{
+	public static String downloadFullUserImage(String username, boolean clean) {
 		boolean error = false;
 		String imageurl = "https://www.minecraftskinstealer.com/skin.php?s=700&u=" + username;
 		String path = Config.PATH_SKINS;
 		String basePath = path + "/" + username + "/base.png";
 		String bodyPath = path + "/" + username + "/body.png";
 		String headPath = path + "/" + username + "/head.png";
-		if (clean)
-		{
+		if (clean) {
 			new File(basePath).delete();
 			new File(bodyPath).delete();
 			new File(headPath).delete();
@@ -136,80 +117,65 @@ public class Utils
 		BufferedImage baseImg = null;
 		BufferedImage headImg = null;
 		BufferedImage bodyImg = null;
-		if (!new File(basePath).exists())
-		{
+		if (!new File(basePath).exists()) {
 			baseImg = saveImage(imageurl);
-			try
-			{
+			try {
 				ImageIO.write(baseImg, "png", new File(basePath));
-			}
-			catch (IOException e)
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 				error = true;
 			}
 		}
-		if (!new File(headPath).exists())
-		{
-			try
-			{
-				if (baseImg == null) baseImg = ImageIO.read(new File(basePath));
+		if (!new File(headPath).exists()) {
+			try {
+				if (baseImg == null)
+					baseImg = ImageIO.read(new File(basePath));
 				headImg = baseImg.getSubimage(90, 50, 80, 80);
 				ImageIO.write(headImg, "png", new File(headPath));
-			}
-			catch (IOException e)
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 				error = true;
 			}
 		}
-		if (!new File(bodyPath).exists())
-		{
-			try
-			{
-				if (baseImg == null) baseImg = ImageIO.read(new File(basePath));
+		if (!new File(bodyPath).exists()) {
+			try {
+				if (baseImg == null)
+					baseImg = ImageIO.read(new File(basePath));
 				bodyImg = baseImg.getSubimage(50, 50, 160, 320);
 				ImageIO.write(bodyImg, "png", new File(bodyPath));
-			}
-			catch (IOException e)
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 				error = true;
 			}
 		}
-		if (error) return "";
-		if (bodyImg == null) return "";
+		if (error)
+			return "";
+		if (bodyImg == null)
+			return "";
 		return img2Base64(bodyImg);
 	}
 
-	public static BufferedImage saveImage(String imageUrl)
-	{
-		try
-		{
+	public static BufferedImage saveImage(String imageUrl) {
+		try {
 			URL url = new URL(imageUrl);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
+			connection.setRequestProperty("User-Agent",
+					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
 			BufferedImage image = ImageIO.read(connection.getInputStream());
 			return image;
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
-	public static String img2Base64(BufferedImage img)
-	{
+	public static String img2Base64(BufferedImage img) {
 		final ByteArrayOutputStream os = new ByteArrayOutputStream();
-		try
-		{
+		try {
 			ImageIO.write(img, "png", Base64.getEncoder().wrap(os));
 			String base64 = os.toString(StandardCharsets.UTF_8.name());
 			os.close();
 			return "data:image/png;base64," + base64;
-		}
-		catch (final Exception oe)
-		{
+		} catch (final Exception oe) {
 			return null;
 		}
 	}

@@ -14,17 +14,13 @@ import de.headshotharp.web.controller.DefaultController;
 
 @Controller
 @RequestMapping("/admin")
-public class AdminController extends DefaultController
-{
+public class AdminController extends DefaultController {
 	@RequestMapping("")
-	String admin(@ModelAttribute("ControllerData") ControllerData cd)
-	{
+	String admin(@ModelAttribute("ControllerData") ControllerData cd) {
 		cd.getModel().addAttribute("bg", "");
-		if (cd.getAuthentication().isLoggedIn())
-		{
+		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
-			if (player.hasPermission(PermissionsGroup.DEVELOPMENT))
-			{
+			if (player.hasPermission(PermissionsGroup.DEVELOPMENT)) {
 				String html = "<h3>Administration</h3>";
 				html += Bootstrap.button("News", "/admin/news", ButtonType.DEFAULT);
 				html += Bootstrap.button("Umfrage", "/admin/poll", ButtonType.DEFAULT);
@@ -33,14 +29,10 @@ public class AdminController extends DefaultController
 				html += Bootstrap.button("Permissions", "/admin/permissions", ButtonType.DEFAULT);
 				html += Bootstrap.button("Shop", "/admin/shop", ButtonType.DEFAULT);
 				cd.getModel().addAttribute("content", html);
-			}
-			else
-			{
+			} else {
 				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
-		}
-		else
-		{
+		} else {
 			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";

@@ -15,11 +15,11 @@ import de.headshotharp.web.data.type.Player;
 import de.headshotharp.web.data.type.ServerStatus;
 
 @Controller
-public class DefaultController
-{
+public class DefaultController {
 	@ModelAttribute("ControllerData")
-	public ControllerData getControllerData(Model model, HttpSession session, @CookieValue(value = Config.COOKIE_NAME_USERID, defaultValue = "") String cookieuserid, @CookieValue(value = Config.COOKIE_NAME_TOKEN, defaultValue = "") String cookietoken)
-	{
+	public ControllerData getControllerData(Model model, HttpSession session,
+			@CookieValue(value = Config.COOKIE_NAME_USERID, defaultValue = "") String cookieuserid,
+			@CookieValue(value = Config.COOKIE_NAME_TOKEN, defaultValue = "") String cookietoken) {
 		// create DataProvider
 		DataProvider dp = new DataProvider();
 		// serverstatus
@@ -28,10 +28,10 @@ public class DefaultController
 		// authentication
 		Authentication auth = new Authentication(session, dp);
 		boolean loggedin = auth.isLoggedIn();
-		if (!loggedin) loggedin = auth.login(cookieuserid, cookietoken);
+		if (!loggedin)
+			loggedin = auth.login(cookieuserid, cookietoken);
 		model.addAttribute("loggedin", loggedin);
-		if (loggedin)
-		{
+		if (loggedin) {
 			Player player = auth.getPlayer();
 			model.addAttribute("player", player);
 		}

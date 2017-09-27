@@ -14,8 +14,7 @@ import de.headshotharp.web.Config;
 import de.headshotharp.web.data.DataProvider;
 import de.headshotharp.web.data.type.Player;
 
-public class Authentication implements Closeable
-{
+public class Authentication implements Closeable {
 	private static SecureRandom random = new SecureRandom();
 	private HttpSession session;
 	private DataProvider dp;
@@ -24,58 +23,53 @@ public class Authentication implements Closeable
 	private boolean loggedin = false;
 	private Player player = null;
 
-	public Authentication(HttpSession session, DataProvider dp)
-	{
+	public Authentication(HttpSession session, DataProvider dp) {
 		this.session = session;
 		this.dp = dp;
 	}
 
-	public Player getPlayer()
-	{
+	public Player getPlayer() {
 		isLoggedIn();
 		return player;
 	}
 
-	public boolean isLoggedIn()
-	{
-		if (loginChecked) return loggedin;
+	public boolean isLoggedIn() {
+		if (loginChecked)
+			return loggedin;
 		String userid = (String) session.getAttribute(Config.SESSION_VAR_USERID);
-		if (userid == null) return false;
+		if (userid == null)
+			return false;
 		String username = (String) session.getAttribute(Config.SESSION_VAR_USERNAME);
-		if (username == null) return false;
+		if (username == null)
+			return false;
 		String password = (String) session.getAttribute(Config.SESSION_VAR_PASSWORD);
-		if (password == null) return false;
+		if (password == null)
+			return false;
 		AuthenticationStatus status = dp.checkCredentials(userid, username, password);
-		if (status == AuthenticationStatus.OK)
-		{
+		if (status == AuthenticationStatus.OK) {
 			this.userid = userid;
 			loginChecked = true;
 			player = dp.getPlayerById(userid);
 			loggedin = true;
 			return true;
-		}
-		else
-		{
+		} else {
 			loginChecked = true;
 			return false;
 		}
 	}
 
-	public boolean login(String cookieuserid, String cookietoken)
-	{
-		if (cookieuserid.length() == 0) return false;
-		if (cookietoken.length() == 0) return false;
+	public boolean login(String cookieuserid, String cookietoken) {
+		if (cookieuserid.length() == 0)
+			return false;
+		if (cookietoken.length() == 0)
+			return false;
 		int c_userid = -1;
-		try
-		{
+		try {
 			c_userid = Integer.parseInt(cookieuserid);
-		}
-		catch (NumberFormatException e)
-		{
+		} catch (NumberFormatException e) {
 			return false;
 		}
-		if (dp.checkToken(c_userid, cookietoken))
-		{
+		if (dp.checkToken(c_userid, cookietoken)) {
 			AuthPlayer player = dp.getAuthPlayer(c_userid);
 			loggedin = login(player.getUsername(), player.getPassword(), false, null);
 			return loggedin;
@@ -91,41 +85,36 @@ public class Authentication implements Closeable
 	 * @param stayLoggedin
 	 * @return
 	 */
-	public boolean login(String username, String password, boolean stayLoggedin, HttpServletResponse response)
-	{
-		if (username.length() == 0) return false;
-		if (password.length() == 0) return false;
+	public boolean login(String username, String password, boolean stayLoggedin, HttpServletResponse response) {
+		if (username.length() == 0)
+			return false;
+		if (password.length() == 0)
+			return false;
 		player = dp.getPlayerByName(username);
-		if (player == null) return false;
+		if (player == null)
+			return false;
 		String id = "" + player.id;
 		session.setAttribute(Config.SESSION_VAR_USERID, id);
 		session.setAttribute(Config.SESSION_VAR_USERNAME, username);
 		session.setAttribute(Config.SESSION_VAR_PASSWORD, password);
 		session.setMaxInactiveInterval(3600);
 		AuthenticationStatus status = dp.checkCredentials(id, username, password);
-		if (status == AuthenticationStatus.OK)
-		{
+		if (status == AuthenticationStatus.OK) {
 			this.userid = id;
 			loginChecked = true;
-			if (stayLoggedin)
-			{
+			if (stayLoggedin) {
 				String token = dp.createToken(player.id);
 				setCookieToken(response, userid, token);
 			}
-			try
-			{
+			try {
 				int i_id = Integer.parseInt(userid);
 				dp.setPlayerWebLoginNow(i_id);
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				System.out.println("Could't parse LOGIN EVENT userid (lastweblogin not set)");
 			}
 			loggedin = true;
 			return true;
-		}
-		else
-		{
+		} else {
 			player = null;
 			loginChecked = true;
 			loggedin = false;
@@ -133,16 +122,12 @@ public class Authentication implements Closeable
 		}
 	}
 
-	public static void logout(DataProvider dp, HttpSession session, HttpServletResponse response)
-	{
+	public static void logout(DataProvider dp, HttpSession session, HttpServletResponse response) {
 		String userid = (String) session.getAttribute(Config.SESSION_VAR_USERID);
 		int i_userid = -1;
-		try
-		{
+		try {
 			i_userid = Integer.parseInt(userid);
-		}
-		catch (NumberFormatException e)
-		{
+		} catch (NumberFormatException e) {
 
 		}
 		session.invalidate();
@@ -157,8 +142,7 @@ public class Authentication implements Closeable
 		dp.deleteToken(i_userid);
 	}
 
-	public static void setCookieToken(HttpServletResponse response, String userid, String token)
-	{
+	public static void setCookieToken(HttpServletResponse response, String userid, String token) {
 		Cookie cookieToken = new Cookie(Config.COOKIE_NAME_TOKEN, token);
 		// cookieToken.setSecure(true);
 		cookieToken.setMaxAge(604800);
@@ -169,34 +153,31 @@ public class Authentication implements Closeable
 		response.addCookie(cookieUserid);
 	}
 
-	public static String MD5(String input)
-	{
+	public static String MD5(String input) {
 		MessageDigest md = null;
-		try
-		{
+		try {
 			md = MessageDigest.getInstance("MD5");
 			md.update(input.getBytes());
-		}
-		catch (NoSuchAlgorithmException ex)
-		{
+		} catch (NoSuchAlgorithmException ex) {
 			return null;
 		}
 		final BigInteger bigInt = new BigInteger(1, md.digest());
 		return String.format("%032x", bigInt);
 	}
 
-	public static String nextSessionToken()
-	{
+	public static String nextSessionToken() {
 		return new BigInteger(130, random).toString(32);
 	}
 
-	public RegistrationStatus register(String username, String passwd, String passwd2, String code)
-	{
+	public RegistrationStatus register(String username, String passwd, String passwd2, String code) {
 		Player p = dp.getPlayerByName(username);
-		if (p == null) return RegistrationStatus.NO_DATA;
+		if (p == null)
+			return RegistrationStatus.NO_DATA;
 		RegistrationStatus status = dp.getPlayerRegistrationStatus(p.id);
-		if (status == RegistrationStatus.ALREADY_REGISTERED) return RegistrationStatus.ALREADY_REGISTERED;
-		if (status == RegistrationStatus.UNDEFINED) return RegistrationStatus.DB_ERROR;
+		if (status == RegistrationStatus.ALREADY_REGISTERED)
+			return RegistrationStatus.ALREADY_REGISTERED;
+		if (status == RegistrationStatus.UNDEFINED)
+			return RegistrationStatus.DB_ERROR;
 		return setPassword(dp, p, passwd, passwd2, code);
 	}
 
@@ -209,10 +190,10 @@ public class Authentication implements Closeable
 	 * @param code
 	 * @return
 	 */
-	public RegistrationStatus forgotPasswd(String username, String passwd, String passwd2, String code)
-	{
+	public RegistrationStatus forgotPasswd(String username, String passwd, String passwd2, String code) {
 		Player p = dp.getPlayerByName(username);
-		if (p == null) return RegistrationStatus.NO_DATA;
+		if (p == null)
+			return RegistrationStatus.NO_DATA;
 		return setPassword(dp, p, passwd, passwd2, code);
 	}
 
@@ -226,15 +207,18 @@ public class Authentication implements Closeable
 	 * @param code
 	 * @return
 	 */
-	public static RegistrationStatus setPassword(DataProvider dp, Player p, String passwd, String passwd2, String code)
-	{
+	public static RegistrationStatus setPassword(DataProvider dp, Player p, String passwd, String passwd2,
+			String code) {
 		String dbCode = dp.getPlayerSecurityCode(p.id);
-		if (dbCode == null) return RegistrationStatus.DB_ERROR;
-		if (!checkSecurityCode(dbCode, code)) return RegistrationStatus.WRONGE_CODE;
-		if (!passwd.equals(passwd2)) return RegistrationStatus.UNEQUAL_PASSWD;
-		if (passwd.length() < 8) return RegistrationStatus.SHORT_PASSWORD;
-		if (dp.setPlayerPassword(p.id, MD5(passwd)))
-		{
+		if (dbCode == null)
+			return RegistrationStatus.DB_ERROR;
+		if (!checkSecurityCode(dbCode, code))
+			return RegistrationStatus.WRONGE_CODE;
+		if (!passwd.equals(passwd2))
+			return RegistrationStatus.UNEQUAL_PASSWD;
+		if (passwd.length() < 8)
+			return RegistrationStatus.SHORT_PASSWORD;
+		if (dp.setPlayerPassword(p.id, MD5(passwd))) {
 			dp.resetPlayerSecurityCode(p.id);
 			return RegistrationStatus.SUCCESSFUL_REGISTERED;
 		}
@@ -253,15 +237,17 @@ public class Authentication implements Closeable
 	 * @param oldpw
 	 * @return
 	 */
-	public RegistrationStatus changePasswordWithOldPassword(String passwd, String passwd2, String oldpw)
-	{
-		if (player == null) return RegistrationStatus.NOT_LOGGED_IN;
-		if (!passwd.equals(passwd2)) return RegistrationStatus.UNEQUAL_PASSWD;
-		if (passwd.length() < 8) return RegistrationStatus.SHORT_PASSWORD;
-		if (!dp.getAuthPlayer(player.id).getPassword().equals(MD5(oldpw))) return RegistrationStatus.WRONGE_CODE;
+	public RegistrationStatus changePasswordWithOldPassword(String passwd, String passwd2, String oldpw) {
+		if (player == null)
+			return RegistrationStatus.NOT_LOGGED_IN;
+		if (!passwd.equals(passwd2))
+			return RegistrationStatus.UNEQUAL_PASSWD;
+		if (passwd.length() < 8)
+			return RegistrationStatus.SHORT_PASSWORD;
+		if (!dp.getAuthPlayer(player.id).getPassword().equals(MD5(oldpw)))
+			return RegistrationStatus.WRONGE_CODE;
 		String md5pass = MD5(passwd);
-		if (dp.setPlayerPassword(player.id, md5pass))
-		{
+		if (dp.setPlayerPassword(player.id, md5pass)) {
 			dp.resetPlayerSecurityCode(player.id);
 			session.setAttribute(Config.SESSION_VAR_PASSWORD, md5pass);
 			return RegistrationStatus.SUCCESSFUL_REGISTERED;
@@ -269,15 +255,14 @@ public class Authentication implements Closeable
 		return RegistrationStatus.DB_ERROR;
 	}
 
-	public static boolean checkSecurityCode(String code1, String code2)
-	{
-		if (code1.equals(code2) && !code1.equals("NONE")) return true;
+	public static boolean checkSecurityCode(String code1, String code2) {
+		if (code1.equals(code2) && !code1.equals("NONE"))
+			return true;
 		return false;
 	}
 
 	@Override
-	public void close()
-	{
+	public void close() {
 		dp.close();
 	}
 }

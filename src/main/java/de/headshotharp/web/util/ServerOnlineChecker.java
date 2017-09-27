@@ -6,31 +6,23 @@ import java.util.Properties;
 
 import de.headshotharp.web.data.DataProvider;
 
-public class ServerOnlineChecker
-{
+public class ServerOnlineChecker {
 	public static boolean onlineStatus = false;
 
 	private static String host = "";
 	private static int port = -1;
 
-	public static void startChecker()
-	{
+	public static void startChecker() {
 		Properties prop = DataProvider.getProperties();
 		host = prop.getProperty("bukkit.host");
 		port = Integer.parseInt(prop.getProperty("bukkit.port"));
-		new Thread(new Runnable()
-		{
-			public void run()
-			{
-				while (true)
-				{
+		new Thread(new Runnable() {
+			public void run() {
+				while (true) {
 					onlineStatus = checkRemoteHost(host, port);
-					try
-					{
+					try {
 						Thread.sleep(10000);
-					}
-					catch (InterruptedException e)
-					{
+					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
@@ -38,31 +30,23 @@ public class ServerOnlineChecker
 		}).start();
 	}
 
-	public static boolean isOnline()
-	{
+	public static boolean isOnline() {
 		return onlineStatus;
 	}
 
-	static boolean checkRemoteHost(String host, int port)
-	{
+	static boolean checkRemoteHost(String host, int port) {
 		Socket socket = null;
 		boolean check = false;
-		try
-		{
+		try {
 			socket = new Socket();
 			socket.connect(new InetSocketAddress(host, port), 2000);
 			check = true;
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			check = false;
 		}
-		try
-		{
+		try {
 			socket.close();
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 
 		}
 		return check;

@@ -22,36 +22,29 @@ import de.headshotharp.web.util.graphics.Bootstrap.ButtonType;
 import de.headshotharp.web.controller.DefaultController;
 
 @Controller
-public class AuthenticationController extends DefaultController
-{
+public class AuthenticationController extends DefaultController {
 	@GetMapping("/login")
-	public String getLogin(@ModelAttribute("ControllerData") ControllerData cd)
-	{
-		if (cd.getAuthentication().isLoggedIn())
-		{
+	public String getLogin(@ModelAttribute("ControllerData") ControllerData cd) {
+		if (cd.getAuthentication().isLoggedIn()) {
 			cd.getModel().addAttribute("bg", "");
 			cd.getModel().addAttribute("content", "<p>Du bist bereits eingeloggt</p>");
-		}
-		else
-		{
+		} else {
 			cd.getModel().addAttribute("template", "login");
 		}
 		return "index";
 	}
 
 	@PostMapping("/login")
-	public String postLogin(@ModelAttribute("ControllerData") ControllerData cd, HttpServletResponse response, @RequestParam("username") String username, @RequestParam("password") String password, @RequestParam(value = "stay", required = false, defaultValue = "false") boolean stay)
-	{
+	public String postLogin(@ModelAttribute("ControllerData") ControllerData cd, HttpServletResponse response,
+			@RequestParam("username") String username, @RequestParam("password") String password,
+			@RequestParam(value = "stay", required = false, defaultValue = "false") boolean stay) {
 		cd.getAuthentication().login(username, Authentication.MD5(password), stay, response);
 		String text;
-		if (cd.getAuthentication().isLoggedIn())
-		{
+		if (cd.getAuthentication().isLoggedIn()) {
 			text = "Erfolgreich eingeloggt.";
 			cd.getModel().addAttribute("player", cd.getAuthentication().getPlayer());
 			cd.getModel().addAttribute("loggedin", true);
-		}
-		else
-		{
+		} else {
 			text = "Falscher Benutzername oder Passwort.";
 		}
 		cd.getModel().addAttribute("bg", "");
@@ -60,23 +53,23 @@ public class AuthenticationController extends DefaultController
 	}
 
 	@GetMapping("/register")
-	String getRegister(@ModelAttribute("ControllerData") ControllerData cd)
-	{
+	String getRegister(@ModelAttribute("ControllerData") ControllerData cd) {
 		return getLogin(cd);
 	}
 
 	@PostMapping("/register")
-	String postRegister(@ModelAttribute("ControllerData") ControllerData cd, @RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("password2") String password2, @RequestParam("code") String code)
-	{
+	String postRegister(@ModelAttribute("ControllerData") ControllerData cd, @RequestParam("username") String username,
+			@RequestParam("password") String password, @RequestParam("password2") String password2,
+			@RequestParam("code") String code) {
 		RegistrationStatus status = cd.getAuthentication().register(username, password, password2, code);
 		cd.getModel().addAttribute("bg", "");
-		cd.getModel().addAttribute("content", "<p>" + status.getMessage() + "</p><br /><a class='btn btn-default' href='/register'>Zurück</a>");
+		cd.getModel().addAttribute("content",
+				"<p>" + status.getMessage() + "</p><br /><a class='btn btn-default' href='/register'>Zurück</a>");
 		return "index";
 	}
 
 	@RequestMapping("/logout")
-	public String logout(Model model, HttpSession session, HttpServletResponse response)
-	{
+	public String logout(Model model, HttpSession session, HttpServletResponse response) {
 		DataProvider dp = new DataProvider();
 		Authentication.logout(dp, session, response);
 		ServerStatus serverStatus = dp.getServerStatus();
@@ -90,38 +83,31 @@ public class AuthenticationController extends DefaultController
 	}
 
 	@RequestMapping("/resetpassword")
-	String resetPassword(@ModelAttribute("ControllerData") ControllerData cd)
-	{
+	String resetPassword(@ModelAttribute("ControllerData") ControllerData cd) {
 		cd.getModel().addAttribute("bg", "");
-		if (cd.getAuthentication().isLoggedIn())
-		{
-			cd.getModel().addAttribute("content", "<p>Du bist eingeloggt. Sicher, dass du dein Passwort vergessen hast? Bitte logge dich <a class='btn btn-sm btn-success' href='/logout'>hier</a> zuerst aus.</p>");
-		}
-		else
-		{
+		if (cd.getAuthentication().isLoggedIn()) {
+			cd.getModel().addAttribute("content",
+					"<p>Du bist eingeloggt. Sicher, dass du dein Passwort vergessen hast? Bitte logge dich <a class='btn btn-sm btn-success' href='/logout'>hier</a> zuerst aus.</p>");
+		} else {
 			cd.getModel().addAttribute("template", "resetpassword");
 		}
 		return "index";
 	}
 
 	@PostMapping("/resetpassword")
-	String resetPasswordPost(@ModelAttribute("ControllerData") ControllerData cd, @RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("password2") String password2, @RequestParam("code") String code)
-	{
+	String resetPasswordPost(@ModelAttribute("ControllerData") ControllerData cd,
+			@RequestParam("username") String username, @RequestParam("password") String password,
+			@RequestParam("password2") String password2, @RequestParam("code") String code) {
 		cd.getModel().addAttribute("bg", "");
-		if (cd.getAuthentication().isLoggedIn())
-		{
-			cd.getModel().addAttribute("content", "<p>Du bist eingeloggt. Sicher, dass du dein Passwort vergessen hast? Bitte logge dich <a class='btn btn-sm btn-success' href='/logout'>hier</a> zuerst aus.</p>");
-		}
-		else
-		{
+		if (cd.getAuthentication().isLoggedIn()) {
+			cd.getModel().addAttribute("content",
+					"<p>Du bist eingeloggt. Sicher, dass du dein Passwort vergessen hast? Bitte logge dich <a class='btn btn-sm btn-success' href='/logout'>hier</a> zuerst aus.</p>");
+		} else {
 			String html = "<p>";
 			RegistrationStatus status = cd.getAuthentication().forgotPasswd(username, password, password2, code);
-			if (status == RegistrationStatus.SUCCESSFUL_REGISTERED)
-			{
+			if (status == RegistrationStatus.SUCCESSFUL_REGISTERED) {
 				html += "Dein Passwort wurde geändert. Du kannst dich <a class='btn btn-sm btn-success' href='/login'>hier</a> einloggen.";
-			}
-			else
-			{
+			} else {
 				html += status.getMessage();
 			}
 			html += "</p>" + Bootstrap.button("Zurück", "/resetpassword", ButtonType.SUCCESS);

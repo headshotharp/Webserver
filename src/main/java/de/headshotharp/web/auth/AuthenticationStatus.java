@@ -1,6 +1,5 @@
 package de.headshotharp.web.auth;
 
-public enum AuthenticationStatus
-{
+public enum AuthenticationStatus {
 	ERROR, OK, WRONG
 }

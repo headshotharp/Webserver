@@ -9,21 +9,18 @@ import de.headshotharp.web.controller.type.ControllerData;
 import de.headshotharp.web.controller.DefaultController;
 
 @Controller
-public class CustomErrorController extends DefaultController implements ErrorController
-{
+public class CustomErrorController extends DefaultController implements ErrorController {
 	private static final String PATH = "/error";
 
 	@RequestMapping(value = PATH)
-	public String error(@ModelAttribute("ControllerData") ControllerData cd)
-	{
+	public String error(@ModelAttribute("ControllerData") ControllerData cd) {
 		cd.getModel().addAttribute("bg", "");
 		cd.getModel().addAttribute("content", "<p>Fehler - Seite nicht gefunden.</p>");
 		return "index";
 	}
 
 	@Override
-	public String getErrorPath()
-	{
+	public String getErrorPath() {
 		return PATH;
 	}
 }

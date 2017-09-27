@@ -17,21 +17,17 @@ import org.springframework.web.multipart.MultipartFile;
 import de.headshotharp.web.Config;
 
 @Controller
-public class UploadController
-{
+public class UploadController {
 	@GetMapping("/upload")
 	@ResponseBody
-	String uploadGet()
-	{
+	String uploadGet() {
 		return "<form method='post' action='/upload' id='upload-file-form'><label>Datei auswählen:</label><input class='form-control' id='upload-file-input' type='file' name='uploadfile' accept='*.png' /></form><p id='upload-result'></p><script src='/webjars/jquery/2.2.1/jquery.min.js'></script><script src='/js/upload.js'></script>";
 	}
 
 	@PostMapping("/upload")
 	@ResponseBody
-	String upload(HttpServletResponse response, @RequestParam("uploadfile") MultipartFile uploadfile)
-	{
-		try
-		{
+	String upload(HttpServletResponse response, @RequestParam("uploadfile") MultipartFile uploadfile) {
+		try {
 			String filename = uploadfile.getOriginalFilename();
 			String directory = Config.PATH_UPLOAD;
 			String filepath = Paths.get(directory, filename).toString();
@@ -39,9 +35,7 @@ public class UploadController
 			stream.write(uploadfile.getBytes());
 			stream.close();
 			response.setStatus(HttpServletResponse.SC_ACCEPTED);
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		}
