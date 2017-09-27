@@ -72,6 +72,12 @@
 			<artifactId>EnchantmentHelper-1.10.2</artifactId>
 			<version>1.0</version>
 		</dependency>
+		<!-- test -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
