@@ -2,6 +2,7 @@ package de.headshotharp.web.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import de.headshotharp.web.auth.RegistrationStatus;
 import de.headshotharp.web.controller.type.ControllerData;
+import de.headshotharp.web.data.ShopDataProvider;
+import de.headshotharp.web.data.UserDataProvider;
 import de.headshotharp.web.data.type.EnchantmentItemPrice;
 import de.headshotharp.web.data.type.ItemShopItemPrice;
 import de.headshotharp.web.data.type.Player;
@@ -18,11 +21,15 @@ import de.headshotharp.web.data.type.Timeline;
 import de.headshotharp.web.util.DateTime;
 import de.headshotharp.web.util.graphics.Bootstrap;
 import de.headshotharp.web.util.graphics.Bootstrap.ButtonType;
-import de.headshotharp.web.controller.DefaultController;
 import de.headshotharp.web.util.graphics.Svg;
 
 @Controller
 public class AccountController extends DefaultController {
+	@Autowired
+	private UserDataProvider userDataProvider;
+
+	@Autowired
+	private ShopDataProvider shopDataProvider;
 
 	@RequestMapping("/account")
 	String account(@ModelAttribute("ControllerData") ControllerData cd,
@@ -30,18 +37,20 @@ public class AccountController extends DefaultController {
 			@RequestParam(value = "month", required = false, defaultValue = "0") int month) {
 		if (cd.getAuthentication().isLoggedIn()) {
 			DateTime now = DateTime.now();
-			if (year < 1)
+			if (year < 1) {
 				year = now.year;
-			if (month < 1)
+			}
+			if (month < 1) {
 				month = now.month;
+			}
 			DateTime dt = new DateTime();
 			dt.year = year;
 			dt.month = month;
 			DateTime prev = dt.prevMonth();
 			int userid = cd.getAuthentication().getPlayer().id;
-			Timeline timeline = cd.getDataProvider().getPlayerTimelineMonth(userid, dt.year, dt.month);
+			Timeline timeline = userDataProvider.getPlayerTimelineMonth(userid, dt.year, dt.month);
 			String svg = "<div class='row'><div class='col-xs-4'>";
-			if (!cd.getDataProvider().getPlayerTimelineStart(userid).isSameMonth(dt)) {
+			if (!userDataProvider.getPlayerTimelineStart(userid).isSameMonth(dt)) {
 				svg += "<a href='/account?year=" + prev.year + "&month=" + prev.month
 						+ "#stats' class='btn btn-success'><span class='glyphicon glyphicon-arrow-left'></span> <span class='desktop-only'>Vorheriger Monat</span></a>";
 			}
@@ -73,9 +82,9 @@ public class AccountController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			StringBuilder html = new StringBuilder();
 			html.append("");
-			List<ItemShopItemPrice> itemShopItems = cd.getDataProvider()
+			List<ItemShopItemPrice> itemShopItems = shopDataProvider
 					.getBoughtItemShopItems(cd.getAuthentication().getPlayer().id);
-			List<EnchantmentItemPrice> enchantments = cd.getDataProvider()
+			List<EnchantmentItemPrice> enchantments = shopDataProvider
 					.getBoughtShopEnchantmentItems(cd.getAuthentication().getPlayer().id);
 			if (itemShopItems.size() == 0 && enchantments.size() == 0) {
 				html.append("<p>Du hast derzeit keine Items oder Enchantments in deinem Inventar.</p>");

@@ -13,14 +13,15 @@ import java.util.Base64;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
+//import org.apache.commons.lang.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
 import de.headshotharp.commonutils.CommonUtils;
-import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.auth.PermissionsGroup;
-import de.headshotharp.web.data.DataProvider;
+import de.headshotharp.web.data.UserDataProvider;
 import de.headshotharp.web.data.type.Player;
 
 public class Utils {
@@ -29,11 +30,11 @@ public class Utils {
 	}
 
 	public static String escapeHtml(String in) {
-		return StringEscapeUtils.escapeHtml(in);
+		return StringEscapeUtils.escapeHtml4(in);
 	}
 
 	public static String cleanNewsMsg(String msg) {
-		return cleanHtml(CommonUtils.nl2br(msg), Config.WHITELIST_BLOG_DEFAULT);
+		return cleanHtml(CommonUtils.nl2br(msg), StaticConfig.WHITELIST_BLOG_DEFAULT);
 	}
 
 	public static String germanizeUptimeString(String in) {
@@ -44,12 +45,12 @@ public class Utils {
 	 * copies permissions from permissions.yml file into DB <br />
 	 * <br />
 	 * returns log as HTML for output
-	 * 
+	 *
 	 * @param dp
 	 * @param file
 	 * @return
 	 */
-	public static String copyPermissionsIntoDatabase(DataProvider dp, String file) {
+	public static String copyPermissionsIntoDatabase(UserDataProvider userDataProvider, String file) {
 		StringBuilder str = new StringBuilder();
 		str.append("<ul>");
 		try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -62,18 +63,20 @@ public class Utils {
 					ok = true;
 					continue;
 				} else if (line.equals("groups:")) {
-					if (ok)
+					if (ok) {
 						break;
+					}
 				}
 				if (ok) {
-					if (line.equals("    group:"))
+					if (line.equals("    group:")) {
 						continue;
+					}
 					if (line.startsWith("    -")) {
 						group = line.substring(6, line.length());
 						PermissionsGroup pg = PermissionsGroup.byBukkitName(group);
-						Player player = dp.getPlayerByName(username);
+						Player player = userDataProvider.getPlayerByName(username);
 						if (player != null) {
-							dp.setPlayerPermissionsGroup(player.id, pg);
+							userDataProvider.setPlayerPermissionsGroup(player.id, pg);
 							str.append("<li>Set '" + player.name + " (" + player.id + ") GROUP '" + pg.toString()
 									+ "'</li>");
 						} else {
@@ -96,15 +99,14 @@ public class Utils {
 	 * deletes files first if 'clean' <br />
 	 * <br />
 	 * return empty string on error, base64 body image for html on success
-	 * 
+	 *
 	 * @param username
 	 * @param clean
 	 * @return
 	 */
-	public static String downloadFullUserImage(String username, boolean clean) {
+	public static String downloadFullUserImage(String username, boolean clean, String path) {
 		boolean error = false;
 		String imageurl = "https://www.minecraftskinstealer.com/skin.php?s=700&u=" + username;
-		String path = Config.PATH_SKINS;
 		String basePath = path + "/" + username + "/base.png";
 		String bodyPath = path + "/" + username + "/body.png";
 		String headPath = path + "/" + username + "/head.png";
@@ -128,8 +130,9 @@ public class Utils {
 		}
 		if (!new File(headPath).exists()) {
 			try {
-				if (baseImg == null)
+				if (baseImg == null) {
 					baseImg = ImageIO.read(new File(basePath));
+				}
 				headImg = baseImg.getSubimage(90, 50, 80, 80);
 				ImageIO.write(headImg, "png", new File(headPath));
 			} catch (IOException e) {
@@ -139,8 +142,9 @@ public class Utils {
 		}
 		if (!new File(bodyPath).exists()) {
 			try {
-				if (baseImg == null)
+				if (baseImg == null) {
 					baseImg = ImageIO.read(new File(basePath));
+				}
 				bodyImg = baseImg.getSubimage(50, 50, 160, 320);
 				ImageIO.write(bodyImg, "png", new File(bodyPath));
 			} catch (IOException e) {
@@ -148,10 +152,12 @@ public class Utils {
 				error = true;
 			}
 		}
-		if (error)
+		if (error) {
 			return "";
-		if (bodyImg == null)
+		}
+		if (bodyImg == null) {
 			return "";
+		}
 		return img2Base64(bodyImg);
 	}
 

@@ -2,8 +2,7 @@ package de.headshotharp.web.data.type;
 
 import java.util.List;
 
-import de.headshotharp.web.Config;
-import de.headshotharp.web.util.ServerOnlineChecker;
+import de.headshotharp.web.StaticConfig;
 
 public class ServerStatus {
 	public boolean online;
@@ -12,12 +11,6 @@ public class ServerStatus {
 
 	public ServerStatus(boolean onlineStatus, List<Player> onlinePlayers, String uptime) {
 		this.online = onlineStatus;
-		this.onlinePlayers = onlinePlayers;
-		this.uptime = uptime;
-	}
-
-	public ServerStatus(List<Player> onlinePlayers, String uptime) {
-		online = ServerOnlineChecker.isOnline();
 		this.onlinePlayers = onlinePlayers;
 		this.uptime = uptime;
 	}
@@ -34,11 +27,13 @@ public class ServerStatus {
 				i++;
 				str.append("<p class='player' style='background-image: url(\"/skins/" + p.name + "/head.png\");'>"
 						+ p.name + "</p>");
-				if (i >= Config.MAX_PLAYER_ONLINE_LIST)
+				if (i >= StaticConfig.MAX_PLAYER_ONLINE_LIST) {
 					break;
+				}
 			}
-			if (count > Config.MAX_PLAYER_ONLINE_LIST)
+			if (count > StaticConfig.MAX_PLAYER_ONLINE_LIST) {
 				str.append("<p>...</p>");
+			}
 		} else {
 			str.append("<p><b>Es sind keine Spieler online</b></p>");
 		}
@@ -46,7 +41,7 @@ public class ServerStatus {
 	}
 
 	public String getAjaxEncode() {
-		String split = Config.VALUE_SPLIT;
+		String split = StaticConfig.VALUE_SPLIT;
 		StringBuilder str = new StringBuilder();
 		str.append((online ? "1" : "0") + split);
 		for (Player player : onlinePlayers) {

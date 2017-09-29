@@ -1,24 +1,29 @@
 package de.headshotharp.web.data.type;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import de.headshotharp.commonutils.CommonUtils;
-import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
 
 public class EnchantmentItemPrice extends EnchantmentItem {
 	private int price;
 	private int category;
 	private int discount;
 
-	private EnchantmentItemPrice(int id, String name, int price, int category) {
+	public EnchantmentItemPrice(int id, String name, int price, int category, int discount) {
 		super(id, name);
 		this.price = price;
 		this.category = category;
-		this.discount = 0;
+		this.discount = discount;
 	}
 
-	public EnchantmentItemPrice(int id, String name, int price, int category, int discount) {
-		this(id, name, price, category);
+	public EnchantmentItemPrice(ResultSet rs) throws SQLException {
+		this(rs.getInt("id"), rs.getString("bukkitname"), rs.getInt("price"), rs.getInt("category"), 0);
+	}
+
+	public void setDiscount(int discount) {
 		this.discount = discount;
 	}
 
@@ -45,11 +50,11 @@ public class EnchantmentItemPrice extends EnchantmentItem {
 		String disc = "";
 		if (discount > 0) {
 			disc = "<p class='shop-discount'>-" + discount + "%</p>";
-			buy = "Für <small><s>" + CommonUtils.decimalDots(getRawPrice()) + " " + Config.VALUE_CURRENCY_HTML
-					+ "</s></small> " + CommonUtils.decimalDots(getPrice()) + " " + Config.VALUE_CURRENCY_HTML
+			buy = "Für <small><s>" + CommonUtils.decimalDots(getRawPrice()) + " " + StaticConfig.VALUE_CURRENCY_HTML
+					+ "</s></small> " + CommonUtils.decimalDots(getPrice()) + " " + StaticConfig.VALUE_CURRENCY_HTML
 					+ " kaufen.";
 		} else {
-			buy = "Für " + CommonUtils.decimalDots(getPrice()) + " " + Config.VALUE_CURRENCY_HTML + " kaufen";
+			buy = "Für " + CommonUtils.decimalDots(getPrice()) + " " + StaticConfig.VALUE_CURRENCY_HTML + " kaufen";
 		}
 		return "<div class='shop'><h1>" + getEnch().getNormalName() + disc + "</h1><img " + style
 				+ "src='/img/mc_enchantement_book.png'><p>" + getEnch().getGermanDescription() + treasure

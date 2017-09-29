@@ -4,149 +4,138 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.auth.Authentication;
 import de.headshotharp.web.auth.PermissionsGroup;
-import de.headshotharp.web.data.DataProvider;
+import de.headshotharp.web.data.ChatDataProvider;
+import de.headshotharp.web.data.GeneralDataProvider;
+import de.headshotharp.web.data.UserDataProvider;
 import de.headshotharp.web.data.type.Chat;
 import de.headshotharp.web.data.type.Player;
 import de.headshotharp.web.data.type.ServerStatus;
 import de.headshotharp.web.util.Utils;
 
-@Controller
+@RestController
 @RequestMapping("/data")
 public class DataController {
+	@Autowired
+	private UserDataProvider userDataProvider;
+
+	@Autowired
+	private Config config;
+
+	@Autowired
+	private GeneralDataProvider generalDataProvider;
+
+	@Autowired
+	private ChatDataProvider chatDataProvider;
+
 	@RequestMapping("/me/{request}")
-	@ResponseBody
 	String meRaw(HttpSession session, @PathVariable String request) {
 		String data = "ERROR";
-		DataProvider dp = new DataProvider();
-		Authentication auth = new Authentication(session, dp);
+		Authentication auth = new Authentication(session, userDataProvider);
 		Player player = auth.getPlayer();
 		if (player != null) {
 			if (request.equals("blockbreakplacetoday")) {
-				int block_break = player.getBlockBreakToday(dp);
-				int block_place = player.getBlockPlaceToday(dp);
-				data = block_break + Config.VALUE_SPLIT + block_place;
+				int block_break = player.getBlockBreakToday(userDataProvider);
+				int block_place = player.getBlockPlaceToday(userDataProvider);
+				data = block_break + StaticConfig.VALUE_SPLIT + block_place;
 			} else {
 				data = player.get(request);
 			}
 		}
-		auth.close();
 		return data;
 	}
 
 	@RequestMapping("/server/status")
-	@ResponseBody
 	String serverStatus() {
-		DataProvider dp = new DataProvider();
-		ServerStatus serverStatus = dp.getServerStatus();
-		dp.close();
+		ServerStatus serverStatus = generalDataProvider.getServerStatus();
 		return serverStatus.getAjaxEncode();
 	}
 
 	@RequestMapping("/server/blockbreakplacemonth")
-	@ResponseBody
 	String serverBlockBreakPlaceMonth() {
-		DataProvider dp = new DataProvider();
-		List<Player> list = dp.getPlayerListActive();
+		List<Player> list = userDataProvider.getPlayerListActive();
 		int block_break = 0;
 		int block_place = 0;
 		for (Player p : list) {
-			block_break += p.getBlockBreakThisMonth(dp);
-			block_place += p.getBlockPlaceThisMonth(dp);
+			block_break += p.getBlockBreakThisMonth(userDataProvider);
+			block_place += p.getBlockPlaceThisMonth(userDataProvider);
 		}
-		dp.close();
-		return block_break + Config.VALUE_SPLIT + block_place;
+		return block_break + StaticConfig.VALUE_SPLIT + block_place;
 	}
 
 	@RequestMapping("/server/blockbreakplacemonth/update")
-	@ResponseBody
 	String serverBlockBreakPlaceMonthUpdate() {
-		DataProvider dp = new DataProvider();
-		List<Player> list = dp.getPlayerListActive();
+		List<Player> list = userDataProvider.getPlayerListActive();
 		int block_break = 0;
 		int block_place = 0;
 		for (Player p : list) {
-			block_break += p.getBlockBreakThisMonth(dp);
-			block_place += p.getBlockPlaceThisMonth(dp);
+			block_break += p.getBlockBreakThisMonth(userDataProvider);
+			block_place += p.getBlockPlaceThisMonth(userDataProvider);
 		}
-		dp.setBlockBreakMonthDb(block_break);
-		dp.setBlockPlaceMonthDb(block_place);
-		dp.close();
-		return block_break + Config.VALUE_SPLIT + block_place;
+		generalDataProvider.setBlockBreakMonthDb(block_break);
+		generalDataProvider.setBlockPlaceMonthDb(block_place);
+		return block_break + StaticConfig.VALUE_SPLIT + block_place;
 	}
 
 	@RequestMapping("/chat/init")
-	@ResponseBody
 	String chatInit(HttpSession session) {
-		DataProvider dp = new DataProvider();
-		Authentication auth = new Authentication(session, dp);
+		Authentication auth = new Authentication(session, userDataProvider);
 		if (!auth.isLoggedIn()) {
-			auth.close();
 			return "ERROR";
 		}
-		String ret = Chat.getAjax(dp.getChat(25));
-		auth.close();
+		String ret = Chat.getAjax(chatDataProvider.getChat(25));
 		return ret;
 	}
 
 	@RequestMapping("/chat/since/{lastid}")
-	@ResponseBody
 	String chatSince(HttpSession session, @PathVariable int lastid) {
-		DataProvider dp = new DataProvider();
-		Authentication auth = new Authentication(session, dp);
+		Authentication auth = new Authentication(session, userDataProvider);
 		if (!auth.isLoggedIn()) {
-			auth.close();
 			return "ERROR";
 		}
-		String ret = Chat.getAjax(dp.getChatSince(lastid));
-		auth.close();
+		String ret = Chat.getAjax(chatDataProvider.getChatSince(lastid));
 		return ret;
 	}
 
 	@PostMapping("/chat/post")
-	@ResponseBody
 	String postChat(HttpSession session, @RequestParam("msg") String msg) {
-		DataProvider dp = new DataProvider();
-		Authentication auth = new Authentication(session, dp);
+		Authentication auth = new Authentication(session, userDataProvider);
 		Player player = auth.getPlayer();
 		if (player == null) {
-			auth.close();
 			return "ERROR";
 		}
 		String msg2 = msg.replaceAll("[^\\u0000-\\uFFFF]", "\uFFFD");
 		if (!msg.equals(msg2)) {
 			msg = "Ich bin total Behindert! Ich habe gerade versucht einen Smiley zu senden. Und wenn ich noch mehr Smileys sende, werde ich gebannt! Der Admin ist schon ein echt toller Typ, ein richtiger Sun!";
-			dp.setPlayerUsedSmiley(player.id);
+			userDataProvider.setPlayerUsedSmiley(player.id);
 		}
-		dp.addChat(player.id, msg);
-		auth.close();
+		chatDataProvider.addChat(player.id, msg);
 		return "OK";
 	}
 
 	@RequestMapping("/skins/update")
-	@ResponseBody
 	String skinsUpdate(HttpSession session) {
-		DataProvider dp = new DataProvider();
-		Authentication auth = new Authentication(session, dp);
+		Authentication auth = new Authentication(session, userDataProvider);
 		Player player = auth.getPlayer();
 		String ret = "ERROR";
 		if (player != null) {
 			if (player.hasPermission(PermissionsGroup.COMMUNITY_MANAGER)) {
-				String split = Config.VALUE_SPLIT;
+				String split = StaticConfig.VALUE_SPLIT;
 				int i = 0;
 				ret = "";
-				List<Player> list = dp.getPlayerList();
+				List<Player> list = userDataProvider.getPlayerList();
 				for (Player p : list) {
-					if (Utils.downloadFullUserImage(p.name, true).length() == 0) {
+					if (Utils.downloadFullUserImage(p.name, true, config.getPath().getSkins()).length() == 0) {
 						ret += p.name + split;
 						i++;
 					}
@@ -154,16 +143,12 @@ public class DataController {
 				ret += i;
 			}
 		}
-		auth.close();
 		return ret;
 	}
 
 	@RequestMapping("/updateuserstatus")
-	@ResponseBody
 	String updateUserStatus() {
-		DataProvider dp = new DataProvider();
-		dp.updateUserStatus();
-		dp.close();
+		userDataProvider.updateUserStatus();
 		return "OK";
 	}
 }

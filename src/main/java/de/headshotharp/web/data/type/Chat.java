@@ -1,8 +1,11 @@
 package de.headshotharp.web.data.type;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
-import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
+import de.headshotharp.web.util.DateTime;
 import de.headshotharp.web.util.Utils;
 
 public class Chat {
@@ -18,6 +21,11 @@ public class Chat {
 		this.timestamp = timestamp;
 		this.msg = msg;
 		this.origin = origin;
+	}
+
+	public Chat(ResultSet rs) throws SQLException {
+		this(rs.getInt("id"), rs.getString("name"), DateTime.parse(rs.getString("timestamp")).toString(),
+				rs.getString("msg"), ChatOrigin.byNumber(rs.getInt("origin")));
 	}
 
 	public String getHtml() {
@@ -37,7 +45,7 @@ public class Chat {
 	}
 
 	public String getAjaxEncode() {
-		String split = Config.VALUE_SPLIT;
+		String split = StaticConfig.VALUE_SPLIT;
 		return id + split + username + split + Utils.escapeHtml(msg) + split + Player.getHeadUrl(username) + split
 				+ origin.getNumber() + split + timestamp + split;
 	}

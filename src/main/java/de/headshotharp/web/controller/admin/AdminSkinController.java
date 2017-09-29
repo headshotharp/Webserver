@@ -1,5 +1,6 @@
 package de.headshotharp.web.controller.admin;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -7,17 +8,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import de.headshotharp.web.Config;
 import de.headshotharp.web.auth.PermissionsGroup;
+import de.headshotharp.web.controller.DefaultController;
 import de.headshotharp.web.controller.type.ControllerData;
+import de.headshotharp.web.data.UserDataProvider;
 import de.headshotharp.web.data.type.Player;
 import de.headshotharp.web.util.Utils;
 import de.headshotharp.web.util.graphics.Bootstrap;
 import de.headshotharp.web.util.graphics.Bootstrap.ButtonType;
-import de.headshotharp.web.controller.DefaultController;
 
 @Controller
 @RequestMapping("/admin/skins")
 public class AdminSkinController extends DefaultController {
+	@Autowired
+	private Config config;
+
+	@Autowired
+	private UserDataProvider userDataProvider;
+
 	@GetMapping("")
 	String skins(@ModelAttribute("ControllerData") ControllerData cd) {
 		if (cd.getAuthentication().isLoggedIn()) {
@@ -28,7 +37,7 @@ public class AdminSkinController extends DefaultController {
 				str.append(Bootstrap.button("Zurück", "/admin", ButtonType.DEFAULT)
 						+ "<br /><hr /><h3>Administration Skins</h3><br /><div id='updateallskins'><a class='btn btn-default' href='javascript:void(0);' onClick='updateSkins();'>Alle aktualisieren</a></div><br /><table class='table-sm table-bordered'>");
 				str.append("<tr><th>Name</th><th></th></tr>");
-				for (Player p : cd.getDataProvider().getPlayerListOrderedLastLogin()) {
+				for (Player p : userDataProvider.getPlayerListOrderedLastLogin()) {
 					str.append("<tr><td>" + p.name
 							+ "</th><th><form action='/admin/skins' method='post'><input type='hidden' name='userId' value='"
 							+ p.id
@@ -54,8 +63,8 @@ public class AdminSkinController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(PermissionsGroup.DEVELOPMENT)) {
-				Player p = cd.getDataProvider().getPlayerById(userId);
-				String base64 = Utils.downloadFullUserImage(p.name, true);
+				Player p = userDataProvider.getPlayerById(userId);
+				String base64 = Utils.downloadFullUserImage(p.name, true, config.getPath().getSkins());
 				String back = "<br /><a class='btn btn-success' href='/admin/skins'>Zurück</a>";
 				if (base64.length() > 0) {
 					cd.getModel().addAttribute("content",

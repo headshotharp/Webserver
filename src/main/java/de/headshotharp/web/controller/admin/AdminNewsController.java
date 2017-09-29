@@ -1,6 +1,7 @@
 package de.headshotharp.web.controller.admin;
 
 import org.jsoup.safety.Whitelist;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -10,21 +11,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import de.headshotharp.commonutils.CommonUtils;
-import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.auth.PermissionsGroup;
+import de.headshotharp.web.controller.DefaultController;
 import de.headshotharp.web.controller.type.ControllerData;
+import de.headshotharp.web.data.NewsDataProvider;
 import de.headshotharp.web.data.type.News;
 import de.headshotharp.web.data.type.News.NewsType;
 import de.headshotharp.web.data.type.Player;
 import de.headshotharp.web.util.Utils;
 import de.headshotharp.web.util.graphics.Bootstrap;
 import de.headshotharp.web.util.graphics.Bootstrap.ButtonType;
-import de.headshotharp.web.controller.DefaultController;
 
 @Controller
 @RequestMapping("/admin/news")
 public class AdminNewsController extends DefaultController {
-	public static PermissionsGroup permissionsGroup = PermissionsGroup.DEVELOPMENT;
+	public final PermissionsGroup permissionsGroup = PermissionsGroup.DEVELOPMENT;
+
+	@Autowired
+	private NewsDataProvider newsDataProvider;
 
 	@RequestMapping("")
 	String news(@ModelAttribute("ControllerData") ControllerData cd) {
@@ -36,13 +41,13 @@ public class AdminNewsController extends DefaultController {
 						+ "<br /><hr /><h3>Administration</h3>"
 						+ Bootstrap.button("Neuer Eintrag", "/admin/news/add", ButtonType.DEFAULT)
 						+ "<br /><br /><p><b>Eintrag bearbeiten:</b></p>"
-						+ News.toAdminListHtml(cd.getDataProvider().getNews(true));
+						+ News.toAdminListHtml(newsDataProvider.getNews(true));
 				cd.getModel().addAttribute("content", html);
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -60,10 +65,10 @@ public class AdminNewsController extends DefaultController {
 				cd.getModel().addAttribute("specialstyle", "news.css");
 				cd.getModel().addAttribute("srcscripts", new String[] { "/js/previewnews.js" });
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -75,17 +80,17 @@ public class AdminNewsController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(permissionsGroup)) {
-				int newsId = cd.getDataProvider().addNews(player.id, Utils.cleanHtml(title, Whitelist.none()),
+				int newsId = newsDataProvider.addNews(player.id, Utils.cleanHtml(title, Whitelist.none()),
 						Utils.cleanNewsMsg(msg), NewsType.byValue(type));
 				cd.getModel().addAttribute("content",
 						"<p>Eintrag wurde erstellt.</p>" + Bootstrap.button("Zurück", "/admin/news", ButtonType.SUCCESS)
-								+ "<br class='clear' />" + cd.getDataProvider().getNews(newsId).toHtml(false));
+								+ "<br class='clear' />" + newsDataProvider.getNews(newsId).toHtml(false));
 				cd.getModel().addAttribute("specialstyle", "news.css");
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -96,7 +101,7 @@ public class AdminNewsController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(permissionsGroup)) {
-				News news = cd.getDataProvider().getNews(newsId);
+				News news = newsDataProvider.getNews(newsId);
 				int type = news.type.getValue();
 				String html = "<h3>Eintrag bearbeiten:</h3><form accept-charset='UTF-8' method='post' action='/admin/news/change'><input type='hidden' name='newsId' value='"
 						+ news.id
@@ -115,10 +120,10 @@ public class AdminNewsController extends DefaultController {
 				cd.getModel().addAttribute("specialstyle", "news.css");
 				cd.getModel().addAttribute("srcscripts", new String[] { "/js/previewnews.js" });
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -135,18 +140,18 @@ public class AdminNewsController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(permissionsGroup)) {
-				cd.getDataProvider().updateNews(newsId, Utils.cleanHtml(title, Whitelist.none()),
-						Utils.cleanNewsMsg(msg), NewsType.byValue(type));
+				newsDataProvider.updateNews(newsId, Utils.cleanHtml(title, Whitelist.none()), Utils.cleanNewsMsg(msg),
+						NewsType.byValue(type));
 				cd.getModel().addAttribute("content",
 						"<p>Eintrag wurde bearbeitet.</p>"
 								+ Bootstrap.button("Zurück", "/admin/news", ButtonType.SUCCESS) + "<br class='clear' />"
-								+ cd.getDataProvider().getNews(newsId).toHtml(false));
+								+ newsDataProvider.getNews(newsId).toHtml(false));
 				cd.getModel().addAttribute("specialstyle", "news.css");
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -157,17 +162,17 @@ public class AdminNewsController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(permissionsGroup)) {
-				News news = cd.getDataProvider().getNews(newsId);
+				News news = newsDataProvider.getNews(newsId);
 				String form = "<p>Eintrag wirklich löschen?</p><br /><form style='display: inline-block;' method='post' action='/admin/news/delete'><input type='hidden' name='newsId' value='"
 						+ news.id
 						+ "' /><input class='btn btn-danger' type='submit' name='delete' value='Löschen'/></form> <a style='display: inline-block; position: relative;' class='btn btn-default' href='/admin/news'>Abbrechen</a><br class='clear'/>";
 				cd.getModel().addAttribute("content", form + news.toHtml(false));
 				cd.getModel().addAttribute("specialstyle", "news.css");
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -178,14 +183,14 @@ public class AdminNewsController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(permissionsGroup)) {
-				cd.getDataProvider().setNewsDeleted(newsId, true);
+				newsDataProvider.setNewsDeleted(newsId, true);
 				cd.getModel().addAttribute("content", "<p>Eintrag wurde gelöscht.</p>"
 						+ Bootstrap.button("Zurück", "/admin/news", ButtonType.SUCCESS));
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -196,17 +201,17 @@ public class AdminNewsController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(permissionsGroup)) {
-				News news = cd.getDataProvider().getNews(newsId);
+				News news = newsDataProvider.getNews(newsId);
 				String form = "<p>Eintrag wirklich wiederherstellen?</p><br /><form style='display: inline-block;' method='post' action='/admin/news/reactivate'><input type='hidden' name='newsId' value='"
 						+ news.id
 						+ "' /><input class='btn btn-warning' type='submit' name='delete' value='Wiederherstellen'/></form> <a style='display: inline-block; position: relative;' class='btn btn-default' href='/admin/news'>Abbrechen</a><br class='clear'/>";
 				cd.getModel().addAttribute("content", form + news.toHtml(false));
 				cd.getModel().addAttribute("specialstyle", "news.css");
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -217,14 +222,14 @@ public class AdminNewsController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(permissionsGroup)) {
-				cd.getDataProvider().setNewsDeleted(newsId, false);
+				newsDataProvider.setNewsDeleted(newsId, false);
 				cd.getModel().addAttribute("content", "<p>Eintrag wurde wiederhergestellt.</p>"
 						+ Bootstrap.button("Zurück", "/admin/news", ButtonType.SUCCESS));
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}

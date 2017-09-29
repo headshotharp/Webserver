@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -12,21 +13,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.auth.PermissionsGroup;
+import de.headshotharp.web.controller.DefaultController;
 import de.headshotharp.web.controller.type.ControllerData;
+import de.headshotharp.web.data.PollDataProvider;
 import de.headshotharp.web.data.type.Player;
 import de.headshotharp.web.data.type.Poll;
 import de.headshotharp.web.util.DateTime;
 import de.headshotharp.web.util.DateTime.DateTimeFormat;
 import de.headshotharp.web.util.graphics.Bootstrap;
 import de.headshotharp.web.util.graphics.Bootstrap.ButtonType;
-import de.headshotharp.web.controller.DefaultController;
 
 @Controller
 @RequestMapping("/admin/poll")
 public class AdminPollController extends DefaultController {
-	public static PermissionsGroup permissionsGroup = PermissionsGroup.ADMIN;
+	public final PermissionsGroup permissionsGroup = PermissionsGroup.ADMIN;
+
+	@Autowired
+	private PollDataProvider pollDataProvider;
 
 	@RequestMapping("")
 	String poll(@ModelAttribute("ControllerData") ControllerData cd) {
@@ -39,12 +44,12 @@ public class AdminPollController extends DefaultController {
 								+ "<br /><hr /><h3>Administration Umfragen</h3>"
 								+ Bootstrap.button("Neue Umfrage", "/admin/poll/add", ButtonType.DEFAULT)
 								+ "<br /><br /><p><b>Umfrage bearbeiten:</b></p>"
-								+ Poll.toAdminListHtml(cd.getDataProvider().getPollBasicList(true)));
+								+ Poll.toAdminListHtml(pollDataProvider.getPollBasicList(true)));
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -86,23 +91,25 @@ public class AdminPollController extends DefaultController {
 
 					}
 					DateTime end = DateTime.now().addDays(duration);
-					List<String> options = new ArrayList<String>();
+					List<String> options = new ArrayList<>();
 					for (String key : requestParams.keySet()) {
 						if (key.startsWith("option")) {
 							String option = requestParams.get(key);
-							if (option.length() > 0)
+							if (option.length() > 0) {
 								options.add(option);
+							}
 						}
 					}
 					if (options.size() >= 2) {
-						int pollid = cd.getDataProvider().addPoll(player.id, title, desc,
+						int pollid = pollDataProvider.addPoll(player.id, title, desc,
 								end.format(DateTimeFormat.FORMAT_SQL_DATESTAMP.getSimpleDateFormat()));
 						if (pollid > 0) {
 							for (String key : requestParams.keySet()) {
 								if (key.startsWith("option")) {
 									String option = requestParams.get(key);
-									if (option.length() > 0)
-										cd.getDataProvider().addPollOption(pollid, option);
+									if (option.length() > 0) {
+										pollDataProvider.addPollOption(pollid, option);
+									}
 								}
 							}
 							cd.getModel().addAttribute("content", "<p>Umfrage wurde hinzugefügt.</p><br />"
@@ -131,7 +138,7 @@ public class AdminPollController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(permissionsGroup)) {
-				Poll poll = cd.getDataProvider().getPollWithoutOptions(pollId);
+				Poll poll = pollDataProvider.getPollWithoutOptions(pollId);
 				if (poll != null) {
 					String html = "<p>Umfrage <b>" + poll.title
 							+ "</b> wirklich löschen?</p><br /><form style='display: inline-block;' method='post' action='/admin/poll/delete'><input type='hidden' name='pollId' value='"
@@ -143,10 +150,10 @@ public class AdminPollController extends DefaultController {
 							+ Bootstrap.button("Zurück", "/admin/poll", ButtonType.SUCCESS));
 				}
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -157,14 +164,14 @@ public class AdminPollController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(permissionsGroup)) {
-				cd.getDataProvider().setPollDeleted(pollId, true);
+				pollDataProvider.setPollDeleted(pollId, true);
 				cd.getModel().addAttribute("content", "<p>Eintrag wurde gelöscht.</p>"
 						+ Bootstrap.button("Zurück", "/admin/poll", ButtonType.SUCCESS));
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -175,7 +182,7 @@ public class AdminPollController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(permissionsGroup)) {
-				Poll poll = cd.getDataProvider().getPollWithoutOptions(pollId);
+				Poll poll = pollDataProvider.getPollWithoutOptions(pollId);
 				if (poll != null) {
 					String html = "<p>Umfrage <b>" + poll.title
 							+ "</b> wirklich wiederherstellen?</p><br /><form style='display: inline-block;' method='post' action='/admin/poll/delete'><input type='hidden' name='pollId' value='"
@@ -187,10 +194,10 @@ public class AdminPollController extends DefaultController {
 							+ Bootstrap.button("Zurück", "/admin/poll", ButtonType.SUCCESS));
 				}
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -201,37 +208,41 @@ public class AdminPollController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(permissionsGroup)) {
-				cd.getDataProvider().setPollDeleted(pollId, false);
+				pollDataProvider.setPollDeleted(pollId, false);
 				cd.getModel().addAttribute("content", "<p>Eintrag wurde wiederhergestellt.</p>"
 						+ Bootstrap.button("Zurück", "/admin/poll", ButtonType.SUCCESS));
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
 
 	private String makeForm(@RequestParam Map<String, String> requestParams) {
 		String title = requestParams.get("title");
-		if (title == null)
+		if (title == null) {
 			title = "";
+		}
 		String desc = requestParams.get("desc");
-		if (desc == null)
+		if (desc == null) {
 			desc = "";
+		}
 		String duration = requestParams.get("duration");
-		if (duration == null)
+		if (duration == null) {
 			duration = "30";
-		List<String> options = new ArrayList<String>();
+		}
+		List<String> options = new ArrayList<>();
 		for (String key : requestParams.keySet()) {
 			if (key.startsWith("option")) {
 				String option = requestParams.get(key);
-				if (option.length() > 0)
+				if (option.length() > 0) {
 					options.add(option);
+				}
 			}
 		}
-		int diff = Config.VALUE_POLL_OPTION_SIZE - options.size();
+		int diff = StaticConfig.VALUE_POLL_OPTION_SIZE - options.size();
 		for (int i = 0; i < diff; i++) {
 			options.add("");
 		}
@@ -242,9 +253,10 @@ public class AdminPollController extends DefaultController {
 				+ desc
 				+ "</textarea></div><div class='form-group'><label>Dauer: <small>(in Tagen)</small></label><input class='form-control' type='text' name='duration' value='"
 				+ duration + "' /></div><div class='form-group'>";
-		for (int i = 1; i <= Config.VALUE_POLL_OPTION_SIZE; i++)
+		for (int i = 1; i <= StaticConfig.VALUE_POLL_OPTION_SIZE; i++) {
 			html += "<label>Option " + i + ":</label><input class='form-control' type='text' name='option" + i
 					+ "' value='" + options.get(i - 1) + "' />";
+		}
 		html += "</div><input type='submit' class='btn btn-success' value='Hinzufügen' /> <a class='btn btn-default' href='/admin/poll'>Abbrechen</a></form>";
 		return html;
 	}

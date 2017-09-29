@@ -2,21 +2,27 @@ package de.headshotharp.web.util;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Properties;
 
-import de.headshotharp.web.data.DataProvider;
+import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import de.headshotharp.web.Config;
+
+@Component
 public class ServerOnlineChecker {
-	public static boolean onlineStatus = false;
+	@Autowired
+	private Config config;
 
-	private static String host = "";
-	private static int port = -1;
+	private boolean onlineStatus = false;
 
-	public static void startChecker() {
-		Properties prop = DataProvider.getProperties();
-		host = prop.getProperty("bukkit.host");
-		port = Integer.parseInt(prop.getProperty("bukkit.port"));
+	@PostConstruct
+	public void startChecker() {
+		final String host = config.getBukkit().getHost();
+		final int port = config.getBukkit().getPort();
 		new Thread(new Runnable() {
+			@Override
 			public void run() {
 				while (true) {
 					onlineStatus = checkRemoteHost(host, port);
@@ -30,11 +36,11 @@ public class ServerOnlineChecker {
 		}).start();
 	}
 
-	public static boolean isOnline() {
+	public boolean isOnline() {
 		return onlineStatus;
 	}
 
-	static boolean checkRemoteHost(String host, int port) {
+	private boolean checkRemoteHost(String host, int port) {
 		Socket socket = null;
 		boolean check = false;
 		try {

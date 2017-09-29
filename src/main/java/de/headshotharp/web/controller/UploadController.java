@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,9 @@ import de.headshotharp.web.Config;
 
 @Controller
 public class UploadController {
+	@Autowired
+	private Config config;
+
 	@GetMapping("/upload")
 	@ResponseBody
 	String uploadGet() {
@@ -29,7 +33,7 @@ public class UploadController {
 	String upload(HttpServletResponse response, @RequestParam("uploadfile") MultipartFile uploadfile) {
 		try {
 			String filename = uploadfile.getOriginalFilename();
-			String directory = Config.PATH_UPLOAD;
+			String directory = config.getPath().getUpload();
 			String filepath = Paths.get(directory, filename).toString();
 			BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filepath)));
 			stream.write(uploadfile.getBytes());

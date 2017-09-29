@@ -1,8 +1,10 @@
 package de.headshotharp.web.data.type;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
-import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.util.DateTime;
 import de.headshotharp.web.util.DateTime.DateTimeFormat;
 
@@ -24,6 +26,12 @@ public class News {
 		this.deleted = deleted;
 	}
 
+	public News(ResultSet rs) throws SQLException {
+		this(rs.getInt("id"), NewsType.byValue(rs.getInt("type")), DateTime.parse(rs.getString("created")),
+				rs.getString("title"), rs.getString("msg"), rs.getString("name"),
+				(rs.getInt("deleted") == 0 ? false : true));
+	}
+
 	@Override
 	public String toString() {
 		return toHtml(false);
@@ -33,7 +41,8 @@ public class News {
 		return "<div class=\"news " + type + (right ? " news-right" : "") + "\"><p class=\"timeplate\">"
 				+ timestamp.format(DateTimeFormat.FORMAT_HUMAN_READABLE_DATE.getSimpleDateFormat())
 				+ "</p><h1 style=\"background-image: url('" + Player.getHeadUrl(poster) + "');\">" + title
-				+ "</h1><br />" + msg.replace(Config.VALUE_CURRENCY_TEXT, Config.VALUE_CURRENCY_HTML) + "</div>";
+				+ "</h1><br />" + msg.replace(StaticConfig.VALUE_CURRENCY_TEXT, StaticConfig.VALUE_CURRENCY_HTML)
+				+ "</div>";
 	}
 
 	public static String toHtml(List<News> list) {

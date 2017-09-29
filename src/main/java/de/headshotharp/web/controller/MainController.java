@@ -1,27 +1,35 @@
 package de.headshotharp.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.controller.type.ControllerData;
+import de.headshotharp.web.data.NewsDataProvider;
+import de.headshotharp.web.data.UserDataProvider;
 import de.headshotharp.web.data.type.News;
 import de.headshotharp.web.data.type.Player;
-import de.headshotharp.web.controller.DefaultController;
 
 @Controller
 public class MainController extends DefaultController {
+	@Autowired
+	private UserDataProvider userDataProvider;
+
+	@Autowired
+	private NewsDataProvider newsDataProvider;
+
 	@RequestMapping("/")
 	String index(@ModelAttribute("ControllerData") ControllerData cd) {
-		cd.getModel().addAttribute("content", News.toHtml(cd.getDataProvider().getNews(false)));
+		cd.getModel().addAttribute("content", News.toHtml(newsDataProvider.getNews(false)));
 		cd.getModel().addAttribute("specialstyle", "news.css");
 		return "index";
 	}
 
 	@RequestMapping("/playerlist")
 	String playerlist(@ModelAttribute("ControllerData") ControllerData cd) {
-		cd.getModel().addAttribute("content", Player.getPlayerListHtml(cd.getDataProvider().getPlayerListActive()));
+		cd.getModel().addAttribute("content", Player.getPlayerListHtml(userDataProvider.getPlayerListActive()));
 		cd.getModel().addAttribute("specialstyle", "playerlist.css");
 		return "index";
 	}
@@ -38,7 +46,7 @@ public class MainController extends DefaultController {
 		cd.getModel().addAttribute("content", "<div class='table-sidescroll'><table id='bestlist'></table></div>");
 		cd.getModel().addAttribute("srcscripts", new String[] { "/js/bestlist.js" });
 		cd.getModel().addAttribute("scripts",
-				new String[] { jsUserId + Player.getJavascriptData(cd.getDataProvider().getPlayerListActive()) });
+				new String[] { jsUserId + Player.getJavascriptData(userDataProvider.getPlayerListActive()) });
 		cd.getModel().addAttribute("specialstyle", "bestlist.css");
 		return "index";
 	}
@@ -49,9 +57,9 @@ public class MainController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.giftReady) {
-				int giftAmount = player.getGift(cd.getDataProvider());
+				int giftAmount = player.getGift(userDataProvider);
 				cd.getModel().addAttribute("content",
-						"<p>Du hast " + giftAmount + " " + Config.VALUE_CURRENCY_HTML + " erhalten.</p>");
+						"<p>Du hast " + giftAmount + " " + StaticConfig.VALUE_CURRENCY_HTML + " erhalten.</p>");
 			} else {
 				cd.getModel().addAttribute("content",
 						"<p>Du hast dein Geschenk bereits abgeholt. Bitte komme morgen wieder.</p>");

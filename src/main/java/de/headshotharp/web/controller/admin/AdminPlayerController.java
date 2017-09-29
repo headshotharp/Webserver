@@ -2,6 +2,7 @@ package de.headshotharp.web.controller.admin;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,28 +10,32 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.auth.PermissionsGroup;
+import de.headshotharp.web.controller.DefaultController;
 import de.headshotharp.web.controller.type.ControllerData;
+import de.headshotharp.web.data.UserDataProvider;
 import de.headshotharp.web.data.type.Player;
 import de.headshotharp.web.util.graphics.Bootstrap;
 import de.headshotharp.web.util.graphics.Bootstrap.ButtonType;
-import de.headshotharp.web.controller.DefaultController;
 
 @Controller
 @RequestMapping("/admin/player")
 public class AdminPlayerController extends DefaultController {
+	@Autowired
+	private UserDataProvider userDataProvider;
+
 	@RequestMapping("")
 	String player(@ModelAttribute("ControllerData") ControllerData cd) {
 		cd.getModel().addAttribute("bg", "");
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(PermissionsGroup.DEVELOPMENT)) {
-				cd.getDataProvider().updateUserStatus();
+				userDataProvider.updateUserStatus();
 				StringBuilder str = new StringBuilder();
 				str.append(Bootstrap.button("Zurück", "/admin", ButtonType.DEFAULT)
 						+ "<br /><hr /><h3>Administration Spieler</h3>");
-				List<Player> list = cd.getDataProvider().getPlayerListOrderStatus();
+				List<Player> list = userDataProvider.getPlayerListOrderStatus();
 				str.append(
 						"<table class='table table-bordered'><tr class='active'><th>ID</th><th>Name</th><th>Realname</th><th>Status</th><th>Aktion</th></tr>");
 				for (Player p : list) {
@@ -42,10 +47,10 @@ public class AdminPlayerController extends DefaultController {
 				str.append("</table>");
 				cd.getModel().addAttribute("content", str.toString());
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -56,7 +61,7 @@ public class AdminPlayerController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(PermissionsGroup.ADMIN)) {
-				Player p = cd.getDataProvider().getPlayerById(userid);
+				Player p = userDataProvider.getPlayerById(userid);
 				if (p != null) {
 					String html = Bootstrap.button("Zurück", "/admin/player", ButtonType.DEFAULT)
 							+ "<br /><hr /><h3>Administration Spieler</h3><p>Spieler bearbeiten: <b>"
@@ -72,10 +77,10 @@ public class AdminPlayerController extends DefaultController {
 					cd.getModel().addAttribute("content", "<p>Es gibt keinen Spieler mit der ID " + userid + ".</p>");
 				}
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED_WRITE);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED_WRITE);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
@@ -87,9 +92,9 @@ public class AdminPlayerController extends DefaultController {
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(PermissionsGroup.ADMIN)) {
-				Player p = cd.getDataProvider().getPlayerById(userid);
+				Player p = userDataProvider.getPlayerById(userid);
 				if (p != null) {
-					cd.getDataProvider().setPlayerRealname(userid, realname);
+					userDataProvider.setPlayerRealname(userid, realname);
 					String html = Bootstrap.button("Zurück", "/admin/player", ButtonType.DEFAULT) + "<p>Spieler <b>"
 							+ p.getPrefixName() + "</b> erfolgreich bearbeitet.</p>";
 					cd.getModel().addAttribute("content", html);
@@ -97,10 +102,10 @@ public class AdminPlayerController extends DefaultController {
 					cd.getModel().addAttribute("content", "<p>Es gibt keinen Spieler mit der ID " + userid + ".</p>");
 				}
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED_WRITE);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED_WRITE);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}

@@ -1,5 +1,7 @@
 package de.headshotharp.web.data.type;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import de.headshotharp.web.util.DateTime;
@@ -24,6 +26,12 @@ public class Poll {
 		this.start = start;
 		this.end = end;
 		this.deleted = deleted;
+	}
+
+	public Poll(ResultSet rs) throws SQLException {
+		this(rs.getInt("id"), rs.getString("name"), rs.getString("title"), rs.getString("description"),
+				DateTime.parse(rs.getString("start")), DateTime.parse(rs.getString("end")),
+				(rs.getInt("deleted") != 0));
 	}
 
 	public boolean isActive() {
@@ -54,22 +62,5 @@ public class Poll {
 		}
 		str.append("</table>");
 		return str.toString();
-	}
-
-	public static class PollOption {
-		public int id = 0;
-		public String polloption;
-		public int resultAmount = 0;
-
-		public PollOption(int id, String polloption) {
-			this.id = id;
-			this.polloption = polloption;
-		}
-
-		public PollOption(int id, String polloption, int resultAmount) {
-			this.id = id;
-			this.polloption = polloption;
-			this.resultAmount = resultAmount;
-		}
 	}
 }

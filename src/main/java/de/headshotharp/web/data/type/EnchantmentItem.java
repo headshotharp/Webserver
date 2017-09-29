@@ -1,5 +1,8 @@
 package de.headshotharp.web.data.type;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import de.headshotharp.enchantment.helper.EnchantmentHelper;
 
 public class EnchantmentItem {
@@ -8,15 +11,17 @@ public class EnchantmentItem {
 	private int level;
 
 	public EnchantmentItem(int id, String name) {
-		this.id = id;
-		ench = EnchantmentHelper.byName(name);
-		level = 0;
+		this(id, name, 0);
 	}
 
 	public EnchantmentItem(int id, String name, int level) {
 		this.id = id;
 		ench = EnchantmentHelper.byName(name);
 		this.level = level;
+	}
+
+	public EnchantmentItem(ResultSet rs) throws SQLException {
+		this(rs.getInt("id"), rs.getString("bukkitname"), rs.getInt("level"));
 	}
 
 	public int getId() {

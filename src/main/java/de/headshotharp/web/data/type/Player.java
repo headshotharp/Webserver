@@ -1,13 +1,15 @@
 package de.headshotharp.web.data.type;
 
 import java.awt.Color;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
 
 import de.headshotharp.commonutils.CommonUtils;
-import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.auth.PermissionsGroup;
-import de.headshotharp.web.data.DataProvider;
+import de.headshotharp.web.data.UserDataProvider;
 import de.headshotharp.web.util.DateTime;
 import de.headshotharp.web.util.DateTime.DateTimeFormat;
 
@@ -34,61 +36,70 @@ public class Player implements Comparable<Player> {
 		this.online = online;
 		this.group = group;
 		this.status = status;
-		giftReady = Config.isGiftReady(lastGift);
+		giftReady = StaticConfig.isGiftReady(lastGift);
 	}
 
-	public int getGift(DataProvider dp) {
+	public Player(ResultSet rs) throws SQLException {
+		this(rs.getInt("id"), rs.getString("name"), rs.getString("realname"),
+				DateTime.parse(rs.getString("creation_date")), DateTime.parse(rs.getString("lastgift")),
+				rs.getInt("money"), rs.getInt("block_break"), rs.getInt("block_place"),
+				(rs.getInt("online") == 1 ? true : false), PermissionsGroup.byValue(rs.getInt("permissionsgroup")),
+				PlayerStatus.byValue(rs.getInt("status")));
+	}
+
+	public int getGift(UserDataProvider dp) {
 		giftReady = false;
-		int giftAmount = Config.getGiftAmount();
+		int giftAmount = StaticConfig.getGiftAmount();
 		dp.updateGiftNow(id);
 		money += giftAmount;
 		dp.setMoney(id, money);
 		return giftAmount;
 	}
 
-	public void addMoney(DataProvider dp, int amount) {
+	public void addMoney(UserDataProvider dp, int amount) {
 		setMoney(dp, money + amount);
 	}
 
-	public void setMoney(DataProvider dp, int amount) {
+	public void setMoney(UserDataProvider dp, int amount) {
 		money = amount;
 		dp.setMoney(id, money);
 	}
 
-	public int getBlockBreakToday(DataProvider dp) {
+	public int getBlockBreakToday(UserDataProvider dp) {
 		int i = dp.getPlayerBlockBreakUntilYesterday(id);
 		return block_break - i;
 	}
 
-	public int getBlockPlaceToday(DataProvider dp) {
+	public int getBlockPlaceToday(UserDataProvider dp) {
 		int i = dp.getPlayerBlockPlaceUntilYesterday(id);
 		return block_place - i;
 	}
 
-	public int getBlockBreakThisMonth(DataProvider dp) {
+	public int getBlockBreakThisMonth(UserDataProvider dp) {
 		int i = dp.getPlayerBlockBreakUntilMonthstart(id);
 		return block_break - i;
 	}
 
-	public int getBlockPlaceThisMonth(DataProvider dp) {
+	public int getBlockPlaceThisMonth(UserDataProvider dp) {
 		int i = dp.getPlayerBlockPlaceUntilMonthstart(id);
 		return block_place - i;
 	}
 
 	/**
 	 * returns fullname for managers, ingame name only for players in <b>HTML</b>
-	 * 
+	 *
 	 * @return
 	 */
 	public String getShortnameHtml() {
-		if (group.isManager())
+		if (group.isManager()) {
 			return getPrefixName();
+		}
 		return name;
 	}
 
 	/**
 	 * returns name with HTML PermissionsGroup prefix
-	 * 
+	 *
 	 * @return
 	 */
 	public String getPrefixName() {
@@ -98,7 +109,7 @@ public class Player implements Comparable<Player> {
 	/**
 	 * returns realname of player<br />
 	 * might by "" if unknown
-	 * 
+	 *
 	 * @return
 	 */
 	public String getRealname() {
@@ -107,11 +118,11 @@ public class Player implements Comparable<Player> {
 
 	/**
 	 * returns money with currency in <b>HTML</b> format
-	 * 
+	 *
 	 * @return
 	 */
 	public String getMoneyHtml() {
-		return getMoneyFormat() + Config.VALUE_CURRENCY_HTML;
+		return getMoneyFormat() + StaticConfig.VALUE_CURRENCY_HTML;
 	}
 
 	public boolean hasPermission(PermissionsGroup pg) {
@@ -216,13 +227,13 @@ public class Player implements Comparable<Player> {
 	}
 
 	public String getAjaxEncode() {
-		String split = Config.VALUE_SPLIT;
+		String split = StaticConfig.VALUE_SPLIT;
 		return getShortnameHtml() + split + getBaseUrl() + split + (online ? "1" : "0") + split;
 	}
 
 	/**
 	 * creates javascript array of players for server online list
-	 * 
+	 *
 	 * @param list
 	 * @return
 	 */
@@ -238,20 +249,24 @@ public class Player implements Comparable<Player> {
 
 	@Override
 	public int compareTo(Player o) {
-		if (id > o.id)
+		if (id > o.id) {
 			return 1;
-		if (id < o.id)
+		}
+		if (id < o.id) {
 			return -1;
+		}
 		return 0;
 	}
 
 	public static final Comparator<Player> COMPARATOR_BLOCK_PLACE = new Comparator<Player>() {
 		@Override
 		public int compare(Player o1, Player o2) {
-			if (o1.block_place < o2.block_place)
+			if (o1.block_place < o2.block_place) {
 				return 1;
-			if (o1.block_place > o2.block_place)
+			}
+			if (o1.block_place > o2.block_place) {
 				return -1;
+			}
 			return 0;
 		}
 	};

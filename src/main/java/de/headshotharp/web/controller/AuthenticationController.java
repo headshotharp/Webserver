@@ -3,6 +3,7 @@ package de.headshotharp.web.controller;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,15 +15,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import de.headshotharp.web.auth.Authentication;
 import de.headshotharp.web.auth.RegistrationStatus;
 import de.headshotharp.web.controller.type.ControllerData;
-import de.headshotharp.web.data.DataProvider;
+import de.headshotharp.web.data.GeneralDataProvider;
+import de.headshotharp.web.data.UserDataProvider;
 import de.headshotharp.web.data.type.Player;
 import de.headshotharp.web.data.type.ServerStatus;
 import de.headshotharp.web.util.graphics.Bootstrap;
 import de.headshotharp.web.util.graphics.Bootstrap.ButtonType;
-import de.headshotharp.web.controller.DefaultController;
 
 @Controller
 public class AuthenticationController extends DefaultController {
+	@Autowired
+	private UserDataProvider userDataProvider;
+
+	@Autowired
+	private GeneralDataProvider generalDataProvider;
+
 	@GetMapping("/login")
 	public String getLogin(@ModelAttribute("ControllerData") ControllerData cd) {
 		if (cd.getAuthentication().isLoggedIn()) {
@@ -70,15 +77,14 @@ public class AuthenticationController extends DefaultController {
 
 	@RequestMapping("/logout")
 	public String logout(Model model, HttpSession session, HttpServletResponse response) {
-		DataProvider dp = new DataProvider();
-		Authentication.logout(dp, session, response);
-		ServerStatus serverStatus = dp.getServerStatus();
+		Authentication.logout(userDataProvider, session, response);
+		ServerStatus serverStatus = generalDataProvider.getServerStatus();
 		model.addAttribute("server", serverStatus);
 		model.addAttribute("loggedin", false);
-		model.addAttribute("onlinelistscript", Player.getJavascriptArrayForInitialOnlineList(dp.getPlayerList()));
+		model.addAttribute("onlinelistscript",
+				Player.getJavascriptArrayForInitialOnlineList(userDataProvider.getPlayerList()));
 		model.addAttribute("bg", "");
 		model.addAttribute("content", "<p>Erfolgreich ausgeloggt</p>");
-		dp.close();
 		return "index";
 	}
 

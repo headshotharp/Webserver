@@ -3,6 +3,7 @@ package de.headshotharp.web.controller;
 import java.awt.Color;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -11,23 +12,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import de.headshotharp.commonutils.CommonUtils;
-import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.controller.type.ControllerData;
+import de.headshotharp.web.data.PollDataProvider;
 import de.headshotharp.web.data.type.Player;
 import de.headshotharp.web.data.type.Poll;
-import de.headshotharp.web.data.type.Poll.PollOption;
+import de.headshotharp.web.data.type.PollOption;
 import de.headshotharp.web.util.graphics.Bootstrap;
 import de.headshotharp.web.util.graphics.Bootstrap.ButtonType;
 import de.headshotharp.web.util.graphics.SvgDonut;
 import de.headshotharp.web.util.graphics.SvgDonut.SvgDonutpart;
-import de.headshotharp.web.controller.DefaultController;
 
 @Controller
 public class PollController extends DefaultController {
+	@Autowired
+	private PollDataProvider pollDataProvider;
+
 	@GetMapping("/poll")
 	String poll(@ModelAttribute("ControllerData") ControllerData cd) {
 		cd.getModel().addAttribute("bg", "");
-		List<Poll> list = cd.getDataProvider().getPollBasicActiveList();
+		List<Poll> list = pollDataProvider.getPollBasicActiveList();
 		String html = "<h3>Aktive Umfragen:</h3><ul>";
 		for (Poll poll : list) {
 			html += "<li><a href='/poll/" + poll.id + "'>" + poll.title + "</a></li>";
@@ -40,23 +44,24 @@ public class PollController extends DefaultController {
 	@GetMapping("/poll/{pollId}")
 	String pollGet(@ModelAttribute("ControllerData") ControllerData cd, @PathVariable int pollId) {
 		cd.getModel().addAttribute("bg", "");
-		Poll poll = cd.getDataProvider().getPollWithOptions(pollId);
+		Poll poll = pollDataProvider.getPollWithOptions(pollId);
 		if (poll != null) {
 			if (cd.getAuthentication().isLoggedIn()) {
 				Player player = cd.getAuthentication().getPlayer();
-				int result = cd.getDataProvider().getPollResult(poll.id, player.id);
+				int result = pollDataProvider.getPollResult(poll.id, player.id);
 				if (result > 0) {
 					String pollresult = "<h3>Umfrage:</h3><p><b>" + poll.title + "</b></p><p>" + poll.description
 							+ "</p><ul>";
 					for (PollOption option : poll.options) {
-						if (option.id == result)
+						if (option.id == result) {
 							pollresult += "<li class='check'><b>" + option.polloption + "</b></li>";
-						else
+						} else {
 							pollresult += "<li>" + option.polloption + "</li>";
+						}
 					}
 					pollresult += "</ul>";
 					// ###
-					List<PollOption> pollResults = cd.getDataProvider().getPollResults(poll.id);
+					List<PollOption> pollResults = pollDataProvider.getPollResults(poll.id);
 					SvgDonut svgDonutResult = new SvgDonut("donut_result", "donut_result", "data_donut_result");
 					StringBuilder tableResult = new StringBuilder();
 					tableResult.append(
@@ -64,7 +69,7 @@ public class PollController extends DefaultController {
 					int index = 0;
 					int totalVotes = 0;
 					for (PollOption po : pollResults) {
-						Color c = Config.COLORS_BASE_DEFAULT[index++ % Config.COLORS_BASE_DEFAULT.length];
+						Color c = StaticConfig.COLORS_BASE_DEFAULT[index++ % StaticConfig.COLORS_BASE_DEFAULT.length];
 						svgDonutResult.addPart(new SvgDonutpart(po.polloption, c, po.resultAmount));
 						tableResult.append("<tr><td style='background-color: " + CommonUtils.colorToHtml(c) + "'>"
 								+ index + "</td><td><p>" + po.polloption + "</p></td><td class='text-right'>"
@@ -108,7 +113,7 @@ public class PollController extends DefaultController {
 		cd.getModel().addAttribute("bg", "");
 		if (cd.getAuthentication().isLoggedIn()) {
 			Player player = cd.getAuthentication().getPlayer();
-			cd.getDataProvider().addPollResult(pollId, player.id, optionId);
+			pollDataProvider.addPollResult(pollId, player.id, optionId);
 			cd.getModel().addAttribute("content", "<p>Danke, dass du an der Umfrage teilgenommen hast.</p>"
 					+ Bootstrap.button("Ergebnis", "/poll/" + pollId, ButtonType.SUCCESS));
 		} else {

@@ -1,27 +1,36 @@
 package de.headshotharp.web.data.type;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import de.headshotharp.commonutils.CommonUtils;
-import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
 
 public class ItemShopItemPrice extends ItemShopItem {
 	private int price;
 	private int discount;
 
 	public ItemShopItemPrice(int id, String name, String mc_item, int price) {
-		super(id, name, mc_item);
-		this.price = price;
-		this.discount = 0;
+		this(id, name, mc_item, price, 0);
 	}
 
 	public ItemShopItemPrice(int id, String name, String mc_item, int price, int discount) {
-		this(id, name, mc_item, price);
+		super(id, name, mc_item);
+		this.price = price;
 		this.discount = discount;
+	}
+
+	public ItemShopItemPrice(ResultSet rs) throws SQLException {
+		this(rs.getInt("id"), rs.getString("name"), rs.getString("mc_item"), rs.getInt("price"), 0);
 	}
 
 	public int getDiscount() {
 		return discount;
+	}
+
+	public void setDiscount(int discount) {
+		this.discount = discount;
 	}
 
 	public int getPrice() {
@@ -38,11 +47,11 @@ public class ItemShopItemPrice extends ItemShopItem {
 		String disc = "";
 		if (discount > 0) {
 			disc = "<p class='shop-discount'>-" + discount + "%</p>";
-			buy = "Für <small><s>" + CommonUtils.decimalDots(getRawPrice()) + " " + Config.VALUE_CURRENCY_HTML
-					+ "</s></small> " + CommonUtils.decimalDots(getPrice()) + " " + Config.VALUE_CURRENCY_HTML
+			buy = "Für <small><s>" + CommonUtils.decimalDots(getRawPrice()) + " " + StaticConfig.VALUE_CURRENCY_HTML
+					+ "</s></small> " + CommonUtils.decimalDots(getPrice()) + " " + StaticConfig.VALUE_CURRENCY_HTML
 					+ " kaufen.";
 		} else {
-			buy = "Für " + CommonUtils.decimalDots(getPrice()) + " " + Config.VALUE_CURRENCY_HTML + " kaufen";
+			buy = "Für " + CommonUtils.decimalDots(getPrice()) + " " + StaticConfig.VALUE_CURRENCY_HTML + " kaufen";
 		}
 		return "<div class='shop'><h1>" + getName() + disc + "</h1><img " + style + "src='/img/" + getImage() + "'><p>"
 				+ getDescription() + "</p><a href='/shop/items/buy/" + getId() + "'><h2>" + buy

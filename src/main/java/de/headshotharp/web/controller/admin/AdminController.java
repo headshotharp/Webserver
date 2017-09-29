@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import de.headshotharp.web.Config;
+import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.auth.PermissionsGroup;
 import de.headshotharp.web.controller.type.ControllerData;
 import de.headshotharp.web.data.type.Player;
@@ -30,10 +30,10 @@ public class AdminController extends DefaultController {
 				html += Bootstrap.button("Shop", "/admin/shop", ButtonType.DEFAULT);
 				cd.getModel().addAttribute("content", html);
 			} else {
-				cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
+				cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_PERMITTED);
 			}
 		} else {
-			cd.getModel().addAttribute("content", Config.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
+			cd.getModel().addAttribute("content", StaticConfig.VALUE_TEXT_ADMINAREA_NOT_LOGGEDIN);
 		}
 		return "index";
 	}
