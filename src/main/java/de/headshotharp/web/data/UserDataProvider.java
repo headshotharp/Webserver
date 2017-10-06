@@ -45,6 +45,16 @@ public class UserDataProvider {
 		String sql = "UPDATE users SET lastgift = NOW() WHERE id = ?";
 		jdbc.update(sql, userid);
 	}
+	
+	/**
+	 * set the color representation of a user
+	 * @param userid
+	 * @param color
+	 */
+	public void setColor(int userid, String color) {
+		String sql = "UPDATE users SET color = ? WHERE id = ?";
+		jdbc.update(sql, color, userid);
+	}
 
 	/**
 	 * sets money for user userid
@@ -258,7 +268,7 @@ public class UserDataProvider {
 	 * @return player or null if not found
 	 */
 	public Player getPlayerByName(String name) {
-		String sql = "SELECT id,name,realname,creation_date,lastgift,money,block_break,block_place,online,permissionsgroup,status FROM users WHERE BINARY name = ?";
+		String sql = "SELECT * FROM users WHERE BINARY name = ?";
 		return jdbc.query(sql, playerExtractor, name);
 	}
 
@@ -284,7 +294,7 @@ public class UserDataProvider {
 	 * @return player or null if not found
 	 */
 	public Player getPlayerById(int id) {
-		String sql = "SELECT id,name,realname,creation_date,lastgift,money,block_break,block_place,online,permissionsgroup,status FROM users WHERE id = ?";
+		String sql = "SELECT * FROM users WHERE id = ?";
 		return jdbc.query(sql, playerExtractor, id);
 	}
 
@@ -297,7 +307,7 @@ public class UserDataProvider {
 	}
 
 	private List<Player> getPlayerListTop(String order) {
-		String sql = "SELECT id,name,realname,creation_date,lastgift,money,block_break,block_place,online,permissionsgroup,status FROM users WHERE status = 1 ORDER BY "
+		String sql = "SELECT * FROM users WHERE status = 1 ORDER BY "
 				+ order + " DESC";
 		return jdbc.query(sql, playerListExtractor);
 	}
@@ -311,7 +321,7 @@ public class UserDataProvider {
 	}
 
 	private List<Player> getPlayerListTopMonth(String order) {
-		String sql = "SELECT id,name,realname,creation_date,lastgift,money,(block_break - (select block_break from usertimeline where userid = users.id and timestamp >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH limit 1)) as block_break,(block_place - (select block_place from usertimeline where userid = users.id and timestamp >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH limit 1)) as block_place,online,permissionsgroup,status FROM users WHERE status = 1 ORDER BY "
+		String sql = "SELECT id,name,realname,creation_date,lastgift,money,(block_break - (select block_break from usertimeline where userid = users.id and timestamp >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH limit 1)) as block_break,(block_place - (select block_place from usertimeline where userid = users.id and timestamp >= LAST_DAY(CURDATE()) + INTERVAL 1 DAY - INTERVAL 1 MONTH limit 1)) as block_place,online,permissionsgroup,status,color FROM users WHERE status = 1 ORDER BY "
 				+ order + " DESC";
 		return jdbc.query(sql, playerListExtractor);
 	}
@@ -322,7 +332,7 @@ public class UserDataProvider {
 	 * @return
 	 */
 	public List<Player> getPlayerList() {
-		String sql = "SELECT id,name,realname,creation_date,lastgift,money,block_break,block_place,online,permissionsgroup,status FROM users";
+		String sql = "SELECT * FROM users";
 		return jdbc.query(sql, playerListExtractor);
 	}
 
@@ -332,7 +342,7 @@ public class UserDataProvider {
 	 * @return
 	 */
 	public List<Player> getPlayerListOrderStatus() {
-		String sql = "SELECT id,name,realname,creation_date,lastgift,money,block_break,block_place,online,permissionsgroup,status FROM users ORDER BY FIELD(status,1,2,0,3)";
+		String sql = "SELECT * FROM users ORDER BY FIELD(status,1,2,0,3)";
 		return jdbc.query(sql, playerListExtractor);
 	}
 
@@ -343,7 +353,7 @@ public class UserDataProvider {
 	 * @return
 	 */
 	public List<Player> getPlayerListActive() {
-		String sql = "SELECT id,name,realname,creation_date,lastgift,money,block_break,block_place,online,permissionsgroup,status FROM users WHERE status = 1 ORDER BY online DESC, lastlogin DESC";
+		String sql = "SELECT * FROM users WHERE status = 1 ORDER BY online DESC, lastlogin DESC";
 		return jdbc.query(sql, playerListExtractor);
 	}
 
@@ -354,7 +364,7 @@ public class UserDataProvider {
 	 * @return
 	 */
 	public List<Player> getPlayerListOrderedLastLogin() {
-		String sql = "SELECT id,name,realname,creation_date,lastgift,money,block_break,block_place,online,permissionsgroup,status FROM users ORDER BY lastlogin DESC";
+		String sql = "SELECT * FROM users ORDER BY lastlogin DESC";
 		return jdbc.query(sql, playerListExtractor);
 	}
 
@@ -365,7 +375,7 @@ public class UserDataProvider {
 	 * @return
 	 */
 	public List<Player> getOnlinePlayerList() {
-		String sql = "SELECT id,name,realname,creation_date,lastgift,money,block_break,block_place,online,permissionsgroup,status FROM users WHERE online != 0 ORDER BY lastlogin";
+		String sql = "SELECT * FROM users WHERE online != 0 ORDER BY lastlogin";
 		return jdbc.query(sql, playerListExtractor);
 	}
 

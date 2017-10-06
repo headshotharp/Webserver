@@ -135,7 +135,7 @@ public class DataController {
 				ret = "";
 				List<Player> list = userDataProvider.getPlayerList();
 				for (Player p : list) {
-					if (Utils.downloadFullUserImage(p.name, true, config.getPath().getSkins()).length() == 0) {
+					if (Utils.downloadFullUserImage(p.name, true, config.getPath().getSkins(), userDataProvider, p.id).length() == 0) {
 						ret += p.name + split;
 						i++;
 					}

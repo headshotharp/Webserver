@@ -18,6 +18,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
+import de.headshotharp.colors.ColorUtils;
 import de.headshotharp.commonutils.CommonUtils;
 import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.auth.PermissionsGroup;
@@ -104,7 +105,7 @@ public class Utils {
 	 * @param clean
 	 * @return
 	 */
-	public static String downloadFullUserImage(String username, boolean clean, String path) {
+	public static String downloadFullUserImage(String username, boolean clean, String path, UserDataProvider userDataProvider, int userid) {
 		boolean error = false;
 		String imageurl = "https://www.minecraftskinstealer.com/skin.php?s=700&u=" + username;
 		String basePath = path + "/" + username + "/base.png";
@@ -135,6 +136,7 @@ public class Utils {
 				}
 				headImg = baseImg.getSubimage(90, 50, 80, 80);
 				ImageIO.write(headImg, "png", new File(headPath));
+				userDataProvider.setColor(userid, ColorUtils.toHtmlColor(ColorUtils.averageColorFromImage(headImg)));
 			} catch (IOException e) {
 				e.printStackTrace();
 				error = true;

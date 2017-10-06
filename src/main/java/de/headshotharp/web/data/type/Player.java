@@ -1,6 +1,5 @@
 package de.headshotharp.web.data.type;
 
-import java.awt.Color;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
@@ -20,11 +19,11 @@ public class Player implements Comparable<Player> {
 	public int money, block_break, block_place;
 	public boolean online, giftReady;
 	public PermissionsGroup group;
-	public Color color = null;
+	public String color;
 	public PlayerStatus status;
 
 	public Player(int id, String name, String realname, DateTime creation_date, DateTime lastGift, int money,
-			int block_break, int block_place, boolean online, PermissionsGroup group, PlayerStatus status) {
+			int block_break, int block_place, boolean online, PermissionsGroup group, PlayerStatus status, String color) {
 		this.id = id;
 		this.name = name;
 		this.realname = realname;
@@ -36,6 +35,7 @@ public class Player implements Comparable<Player> {
 		this.online = online;
 		this.group = group;
 		this.status = status;
+		this.color = color;
 		giftReady = StaticConfig.isGiftReady(lastGift);
 	}
 
@@ -44,7 +44,7 @@ public class Player implements Comparable<Player> {
 				DateTime.parse(rs.getString("creation_date")), DateTime.parse(rs.getString("lastgift")),
 				rs.getInt("money"), rs.getInt("block_break"), rs.getInt("block_place"),
 				(rs.getInt("online") == 1 ? true : false), PermissionsGroup.byValue(rs.getInt("permissionsgroup")),
-				PlayerStatus.byValue(rs.getInt("status")));
+				PlayerStatus.byValue(rs.getInt("status")), rs.getString("color"));
 	}
 
 	public int getGift(UserDataProvider dp) {

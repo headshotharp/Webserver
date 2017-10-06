@@ -1,6 +1,5 @@
 package de.headshotharp.web.controller;
 
-import java.awt.Color;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import de.headshotharp.commonutils.CommonUtils;
+import de.headshotharp.colors.ColorUtils;
 import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.controller.type.ControllerData;
 import de.headshotharp.web.data.PollDataProvider;
@@ -69,9 +68,9 @@ public class PollController extends DefaultController {
 					int index = 0;
 					int totalVotes = 0;
 					for (PollOption po : pollResults) {
-						Color c = StaticConfig.COLORS_BASE_DEFAULT[index++ % StaticConfig.COLORS_BASE_DEFAULT.length];
+						String c = ColorUtils.toHtmlColor(StaticConfig.COLORS_BASE_DEFAULT[index++ % StaticConfig.COLORS_BASE_DEFAULT.length]);
 						svgDonutResult.addPart(new SvgDonutpart(po.polloption, c, po.resultAmount));
-						tableResult.append("<tr><td style='background-color: " + CommonUtils.colorToHtml(c) + "'>"
+						tableResult.append("<tr><td style='background-color: " + c + "'>"
 								+ index + "</td><td><p>" + po.polloption + "</p></td><td class='text-right'>"
 								+ po.resultAmount + "</td></tr>");
 						totalVotes += po.resultAmount;

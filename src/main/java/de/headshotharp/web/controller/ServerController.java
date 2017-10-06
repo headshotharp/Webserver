@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import de.headshotharp.colors.ColorUtils;
 import de.headshotharp.commonutils.CommonUtils;
 import de.headshotharp.web.StaticConfig;
 import de.headshotharp.web.controller.type.ControllerData;
@@ -31,7 +32,7 @@ public class ServerController extends DefaultController {
 			@RequestParam(value = "month", required = false, defaultValue = "false") boolean month) {
 		// player, table, donut
 		int maxPlayers = 7;
-		int colorNumber = 0;
+		// int colorNumber = 0;
 		// block break
 		List<Player> topList = month ? userDataProvider.getPlayerListTopBlockBreakMonth()
 				: userDataProvider.getPlayerListTopBlockBreak();
@@ -46,14 +47,10 @@ public class ServerController extends DefaultController {
 			tableBreak.append(
 					"<table class='table-sm table-bordered'><tr><th>Nr.</th><th>Spieler</th><th>Abgebaute Blöcke</th></tr>");
 			for (Player p : topList) {
-				if (p.color == null) {
-					p.color = StaticConfig.COLORS_BASE_DEFAULT[colorNumber % StaticConfig.COLORS_BASE_DEFAULT.length];
-					colorNumber++;
-				}
 				svgDonutBreak.addPart(new SvgDonutpart(p.name, p.color, p.block_break));
 				restBreak -= p.block_break;
 				i++;
-				tableBreak.append("<tr><td style='background-color: " + CommonUtils.colorToHtml(p.color) + "'>" + i
+				tableBreak.append("<tr><td style='background-color: " + p.color + "'>" + i
 						+ "</td><td><p class='nowrap'>" + p.getShortnameHtml() + "</p></td><td class='text-right'>"
 						+ p.getBlockBreakFormat() + "</td></tr>");
 				if (i >= maxPlayers) {
@@ -64,7 +61,7 @@ public class ServerController extends DefaultController {
 					.append("<tr><td style='background-color: " + CommonUtils.colorToHtml(StaticConfig.COLOR_REST_GRAY)
 							+ "'></td><td><p>Rest</p></td><td class='text-right'>" + CommonUtils.decimalDots(restBreak)
 							+ "</td></tr>");
-			svgDonutBreak.addPart(new SvgDonutpart("Rest", StaticConfig.COLOR_REST_GRAY, restBreak));
+			svgDonutBreak.addPart(new SvgDonutpart("Rest", ColorUtils.toHtmlColor(StaticConfig.COLOR_REST_GRAY), restBreak));
 			tableBreak.append("<tr><td></td><td><p>Gesamt</p></td><td class='text-right'>"
 					+ CommonUtils.decimalDots(totalBlockBreak) + "</td></tr>");
 			tableBreak.append("</table>");
@@ -82,14 +79,10 @@ public class ServerController extends DefaultController {
 			tablePlace.append(
 					"<table class='table-sm table-bordered'><tr><th>Nr.</th><th>Spieler</th><th>Platzierte Blöcke</th></tr>");
 			for (Player p : topList) {
-				if (p.color == null) {
-					p.color = StaticConfig.COLORS_BASE_DEFAULT[colorNumber % StaticConfig.COLORS_BASE_DEFAULT.length];
-					colorNumber++;
-				}
 				svgDonutPlace.addPart(new SvgDonutpart(p.name, p.color, p.block_place));
 				restPlace -= p.block_place;
 				i++;
-				tablePlace.append("<tr><td style='background-color: " + CommonUtils.colorToHtml(p.color) + "'>" + i
+				tablePlace.append("<tr><td style='background-color: " + p.color + "'>" + i
 						+ "</td><td><p class='text-nowrap'>" + p.getShortnameHtml() + "</p></td><td class='text-right'>"
 						+ p.getBlockPlaceFormat() + "</td></tr>");
 				if (i >= maxPlayers) {
@@ -100,7 +93,7 @@ public class ServerController extends DefaultController {
 					.append("<tr><td style='background-color: " + CommonUtils.colorToHtml(StaticConfig.COLOR_REST_GRAY)
 							+ "'></td><td><p>Rest</p></td><td class='text-right'>" + CommonUtils.decimalDots(restPlace)
 							+ "</td></tr>");
-			svgDonutPlace.addPart(new SvgDonutpart("Rest", StaticConfig.COLOR_REST_GRAY, restPlace));
+			svgDonutPlace.addPart(new SvgDonutpart("Rest", ColorUtils.toHtmlColor(StaticConfig.COLOR_REST_GRAY), restPlace));
 			tablePlace.append("<tr><td></td><td><p>Gesamt</p></td><td class='text-right'>"
 					+ CommonUtils.decimalDots(totalBlockPlace) + "</td></tr>");
 			tablePlace.append("</table>");

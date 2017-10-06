@@ -88,8 +88,13 @@
 			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>de.headshotharp.bukkit</groupId>
-			<artifactId>EnchantmentHelper-1.10.2</artifactId>
+			<groupId>de.headshotharp.spigot</groupId>
+			<artifactId>EnchantmentHelper-1.12.2</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.headshotharp.color</groupId>
+			<artifactId>ColorUtils</artifactId>
 			<version>1.0</version>
 		</dependency>
 		<!-- EnchantmentHelper requires bukkit to be provided -->
