@@ -61,7 +61,8 @@ public class ServerController extends DefaultController {
 					.append("<tr><td style='background-color: " + CommonUtils.colorToHtml(StaticConfig.COLOR_REST_GRAY)
 							+ "'></td><td><p>Rest</p></td><td class='text-right'>" + CommonUtils.decimalDots(restBreak)
 							+ "</td></tr>");
-			svgDonutBreak.addPart(new SvgDonutpart("Rest", ColorUtils.toHtmlColor(StaticConfig.COLOR_REST_GRAY), restBreak));
+			svgDonutBreak
+					.addPart(new SvgDonutpart("Rest", ColorUtils.toHtmlColor(StaticConfig.COLOR_REST_GRAY), restBreak));
 			tableBreak.append("<tr><td></td><td><p>Gesamt</p></td><td class='text-right'>"
 					+ CommonUtils.decimalDots(totalBlockBreak) + "</td></tr>");
 			tableBreak.append("</table>");
@@ -93,7 +94,8 @@ public class ServerController extends DefaultController {
 					.append("<tr><td style='background-color: " + CommonUtils.colorToHtml(StaticConfig.COLOR_REST_GRAY)
 							+ "'></td><td><p>Rest</p></td><td class='text-right'>" + CommonUtils.decimalDots(restPlace)
 							+ "</td></tr>");
-			svgDonutPlace.addPart(new SvgDonutpart("Rest", ColorUtils.toHtmlColor(StaticConfig.COLOR_REST_GRAY), restPlace));
+			svgDonutPlace
+					.addPart(new SvgDonutpart("Rest", ColorUtils.toHtmlColor(StaticConfig.COLOR_REST_GRAY), restPlace));
 			tablePlace.append("<tr><td></td><td><p>Gesamt</p></td><td class='text-right'>"
 					+ CommonUtils.decimalDots(totalBlockPlace) + "</td></tr>");
 			tablePlace.append("</table>");

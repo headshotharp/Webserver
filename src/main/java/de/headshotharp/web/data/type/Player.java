@@ -23,7 +23,8 @@ public class Player implements Comparable<Player> {
 	public PlayerStatus status;
 
 	public Player(int id, String name, String realname, DateTime creation_date, DateTime lastGift, int money,
-			int block_break, int block_place, boolean online, PermissionsGroup group, PlayerStatus status, String color) {
+			int block_break, int block_place, boolean online, PermissionsGroup group, PlayerStatus status,
+			String color) {
 		this.id = id;
 		this.name = name;
 		this.realname = realname;

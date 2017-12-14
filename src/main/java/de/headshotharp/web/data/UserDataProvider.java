@@ -45,9 +45,10 @@ public class UserDataProvider {
 		String sql = "UPDATE users SET lastgift = NOW() WHERE id = ?";
 		jdbc.update(sql, userid);
 	}
-	
+
 	/**
 	 * set the color representation of a user
+	 * 
 	 * @param userid
 	 * @param color
 	 */
@@ -307,8 +308,7 @@ public class UserDataProvider {
 	}
 
 	private List<Player> getPlayerListTop(String order) {
-		String sql = "SELECT * FROM users WHERE status = 1 ORDER BY "
-				+ order + " DESC";
+		String sql = "SELECT * FROM users WHERE status = 1 ORDER BY " + order + " DESC";
 		return jdbc.query(sql, playerListExtractor);
 	}
 

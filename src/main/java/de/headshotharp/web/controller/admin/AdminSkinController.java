@@ -64,12 +64,13 @@ public class AdminSkinController extends DefaultController {
 			Player player = cd.getAuthentication().getPlayer();
 			if (player.hasPermission(PermissionsGroup.DEVELOPMENT)) {
 				Player p = userDataProvider.getPlayerById(userId);
-				if(p != null) {
-					String base64 = Utils.downloadFullUserImage(p.name, true, config.getPath().getSkins(), userDataProvider, userId);
+				if (p != null) {
+					String base64 = Utils.downloadFullUserImage(p.name, true, config.getPath().getSkins(),
+							userDataProvider, userId);
 					String back = "<br /><a class='btn btn-success' href='/admin/skins'>Zurück</a>";
 					if (base64.length() > 0) {
-						cd.getModel().addAttribute("content",
-								"<p>Skin erfolgreich heruntergeladen:</p><br /><img src='" + base64 + "' /><br />" + back);
+						cd.getModel().addAttribute("content", "<p>Skin erfolgreich heruntergeladen:</p><br /><img src='"
+								+ base64 + "' /><br />" + back);
 					} else {
 						cd.getModel().addAttribute("content",
 								"<p>Fehler beim herunterladen des Skins, bitte versuche es später erneut.</p>" + back);

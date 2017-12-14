@@ -105,7 +105,8 @@ public class Utils {
 	 * @param clean
 	 * @return
 	 */
-	public static String downloadFullUserImage(String username, boolean clean, String path, UserDataProvider userDataProvider, int userid) {
+	public static String downloadFullUserImage(String username, boolean clean, String path,
+			UserDataProvider userDataProvider, int userid) {
 		boolean error = false;
 		String imageurl = "https://www.minecraftskinstealer.com/skin.php?s=700&u=" + username;
 		String basePath = path + "/" + username + "/base.png";

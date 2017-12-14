@@ -68,11 +68,11 @@ public class PollController extends DefaultController {
 					int index = 0;
 					int totalVotes = 0;
 					for (PollOption po : pollResults) {
-						String c = ColorUtils.toHtmlColor(StaticConfig.COLORS_BASE_DEFAULT[index++ % StaticConfig.COLORS_BASE_DEFAULT.length]);
+						String c = ColorUtils.toHtmlColor(
+								StaticConfig.COLORS_BASE_DEFAULT[index++ % StaticConfig.COLORS_BASE_DEFAULT.length]);
 						svgDonutResult.addPart(new SvgDonutpart(po.polloption, c, po.resultAmount));
-						tableResult.append("<tr><td style='background-color: " + c + "'>"
-								+ index + "</td><td><p>" + po.polloption + "</p></td><td class='text-right'>"
-								+ po.resultAmount + "</td></tr>");
+						tableResult.append("<tr><td style='background-color: " + c + "'>" + index + "</td><td><p>"
+								+ po.polloption + "</p></td><td class='text-right'>" + po.resultAmount + "</td></tr>");
 						totalVotes += po.resultAmount;
 					}
 					tableResult.append(
