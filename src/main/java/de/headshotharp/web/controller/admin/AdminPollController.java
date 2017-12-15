@@ -185,9 +185,9 @@ public class AdminPollController extends DefaultController {
 				Poll poll = pollDataProvider.getPollWithoutOptions(pollId);
 				if (poll != null) {
 					String html = "<p>Umfrage <b>" + poll.title
-							+ "</b> wirklich wiederherstellen?</p><br /><form style='display: inline-block;' method='post' action='/admin/poll/delete'><input type='hidden' name='pollId' value='"
+							+ "</b> wirklich wiederherstellen?</p><br /><form style='display: inline-block;' method='post' action='/admin/poll/reactivate'><input type='hidden' name='pollId' value='"
 							+ poll.id
-							+ "' /><input class='btn btn-danger' type='submit' name='delete' value='Löschen'/></form> <a style='display: inline-block; position: relative;' class='btn btn-default' href='/admin/poll'>Abbrechen</a><br class='clear'/>";
+							+ "' /><input class='btn btn-warning' type='submit' name='reactivate' value='Wiederherstellen'/></form> <a style='display: inline-block; position: relative;' class='btn btn-default' href='/admin/poll'>Abbrechen</a><br class='clear'/>";
 					cd.getModel().addAttribute("content", html);
 				} else {
 					cd.getModel().addAttribute("content", "<p>Die Umfrage existiert nicht.</p>"

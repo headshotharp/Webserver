@@ -85,7 +85,7 @@ public class PollDataProvider {
 
 	public void setPollDeleted(int id, boolean deleted) {
 		String sql = "UPDATE poll SET deleted = ? where id = ?";
-		jdbc.update(sql, deleted ? 1 : 0);
+		jdbc.update(sql, deleted ? 1 : 0, id);
 	}
 
 	public Poll getPollWithoutOptions(int pollid) {
