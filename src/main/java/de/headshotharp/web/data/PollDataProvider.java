@@ -94,8 +94,8 @@ public class PollDataProvider {
 	}
 
 	public List<PollOption> getPollOptionsFor(int pollid) {
-		String sql = "SELECT id, polloption FROM polloptions WHERE pollid = " + pollid;
-		return jdbc.query(sql, pollOptionListExtractor);
+		String sql = "SELECT id, polloption, 0 as count FROM polloptions WHERE pollid = ?";
+		return jdbc.query(sql, pollOptionListExtractor, pollid);
 	}
 
 	public Poll getPollWithOptions(int pollid) {
@@ -119,7 +119,7 @@ public class PollDataProvider {
 	}
 
 	public List<PollOption> getPollResults(int pollid) {
-		String sql = "SELECT * FROM (SELECT optionid, polloption, COUNT(optionid) AS count FROM pollresults AS pr JOIN polloptions AS po ON po.id = pr.optionid WHERE pr.pollid = ? GROUP BY pr.optionid) a ORDER BY count DESC";
+		String sql = "SELECT optionid as id, polloption, count FROM (SELECT optionid, polloption, COUNT(optionid) AS count FROM pollresults AS pr JOIN polloptions AS po ON po.id = pr.optionid WHERE pr.pollid = ? GROUP BY pr.optionid) a ORDER BY count DESC";
 		return jdbc.query(sql, pollOptionListExtractor, pollid);
 	}
 

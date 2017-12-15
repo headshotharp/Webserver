@@ -40,12 +40,13 @@ public class Poll {
 
 	public String toAdminListHtml() {
 		String title;
-		String operation;
+		String operation="";
+		operation += "<a class='btn-sm btn-default' href='/poll/" + id + "'>Ansehen</a>";
 		if (deleted) {
-			operation = "<a class='btn-sm btn-warning' href='/admin/poll/reactivate/" + id + "'>Wiederherstellen</a>";
+			operation += "<a class='btn-sm btn-warning' href='/admin/poll/reactivate/" + id + "'>Wiederherstellen</a>";
 			title = "<i><small>" + this.title + "</small></i>";
 		} else {
-			operation = "<a class='btn-sm btn-danger' href='/admin/poll/delete/" + id + "'>Löschen</a>";
+			operation += "<a class='btn-sm btn-danger' href='/admin/poll/delete/" + id + "'>Löschen</a>";
 			title = this.title;
 		}
 		return "<tr><td>" + id + "</td><td>" + title + "</td><td>"

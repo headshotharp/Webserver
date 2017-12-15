@@ -20,6 +20,6 @@ public class PollOption {
 	}
 
 	public PollOption(ResultSet rs) throws SQLException {
-		this(rs.getInt("id"), rs.getString("polloption"));
+		this(rs.getInt("id"), rs.getString("polloption"), rs.getInt("count"));
 	}
 }
