@@ -66,7 +66,7 @@ public class ShopDataProvider {
 		return ench;
 	}
 
-	public List<EnchantmentItem> getEnchantmentItemsForOrder(int id) {
+	public List<EnchantmentItem> getEnchantmentItemsForItemShopItem(int id) {
 		String sql = "select e.id, e.bukkitname, si.level from shopitemenchantments as si join enchantments as e on e.id = si.enchantmentid where si.shopitemid = ?";
 		return jdbc.query(sql, enchantmentItemListExtractor, id);
 	}
@@ -75,6 +75,7 @@ public class ShopDataProvider {
 		int discount = getEnchantmentDiscount();
 		String sql = "SELECT id, name, price, mc_item FROM shopitems WHERE id = ?";
 		ItemShopItemPrice item = jdbc.query(sql, itemShopItemPriceExtractor, id);
+		item.setEnchantmentItems(getEnchantmentItemsForItemShopItem(item.getId()));
 		item.setDiscount(discount);
 		return item;
 	}
@@ -84,6 +85,7 @@ public class ShopDataProvider {
 		String sql = "SELECT si.id, si.name, si.price, si.mc_item FROM shopitemshop AS sis JOIN shopitems AS si ON si.id = sis.itemid WHERE used = 0 AND sis.userid = ?";
 		List<ItemShopItemPrice> list = jdbc.query(sql, itemShopItemPriceListExtractor, userid);
 		for (ItemShopItemPrice item : list) {
+			item.setEnchantmentItems(getEnchantmentItemsForItemShopItem(item.getId()));
 			item.setDiscount(discount);
 		}
 		return list;
@@ -94,6 +96,7 @@ public class ShopDataProvider {
 		String sql = "SELECT id, name, price, mc_item FROM shopitems";
 		List<ItemShopItemPrice> list = jdbc.query(sql, itemShopItemPriceListExtractor);
 		for (ItemShopItemPrice item : list) {
+			item.setEnchantmentItems(getEnchantmentItemsForItemShopItem(item.getId()));
 			item.setDiscount(discount);
 		}
 		return list;

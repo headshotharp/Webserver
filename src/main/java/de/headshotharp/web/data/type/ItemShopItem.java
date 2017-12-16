@@ -1,11 +1,17 @@
 package de.headshotharp.web.data.type;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.headshotharp.commonutils.CommonUtils;
 
 public class ItemShopItem {
+	public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
 	private int id;
 	private String name;
 	private String mc_item;
@@ -55,12 +61,16 @@ public class ItemShopItem {
 
 	public String getDescription() {
 		StringBuilder str = new StringBuilder();
-		str.append("Enthält folgende Enchantments:<ul>");
-		for (EnchantmentItem item : enchantmentItems) {
-			str.append(
-					"<li>" + item.getEnch().getTrivialName() + " " + CommonUtils.IntToRoman(item.getLevel()) + "</li>");
+		if (enchantmentItems == null || enchantmentItems.size() == 0) {
+			logger.warn("enchantmentItems is empty for '" + name + "' (" + id + ")");
+		} else {
+			str.append("Enthält folgende Enchantments:<ul>");
+			for (EnchantmentItem item : enchantmentItems) {
+				str.append("<li>" + item.getEnch().getTrivialName() + " " + CommonUtils.IntToRoman(item.getLevel())
+						+ "</li>");
+			}
+			str.append("</ul>");
 		}
-		str.append("</ul>");
 		return str.toString();
 	}
 }
