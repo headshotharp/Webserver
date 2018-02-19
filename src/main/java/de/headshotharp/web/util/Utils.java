@@ -1,5 +1,6 @@
 package de.headshotharp.web.util;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -107,61 +108,86 @@ public class Utils {
 	 */
 	public static String downloadFullUserImage(String username, boolean clean, String path,
 			UserDataProvider userDataProvider, int userid) {
-		boolean error = false;
-		String imageurl = "https://www.minecraftskinstealer.com/skin.php?s=700&u=" + username;
-		String basePath = path + "/" + username + "/base.png";
-		String bodyPath = path + "/" + username + "/body.png";
-		String headPath = path + "/" + username + "/head.png";
-		if (clean) {
-			new File(basePath).delete();
-			new File(bodyPath).delete();
-			new File(headPath).delete();
-		}
-		new File(path + "/" + username).mkdirs();
-		BufferedImage baseImg = null;
-		BufferedImage headImg = null;
-		BufferedImage bodyImg = null;
-		if (!new File(basePath).exists()) {
-			baseImg = saveImage(imageurl);
-			try {
-				ImageIO.write(baseImg, "png", new File(basePath));
-			} catch (IOException e) {
-				e.printStackTrace();
-				error = true;
+		try {
+			// setup
+			String imageurl = "http://minecraft.tools/download-skin/" + username;
+			String bodyPath = path + File.separator + username + File.separator + "body.png";
+			String headPath = path + File.separator + username + File.separator + "head.png";
+			if (clean) {
+				new File(bodyPath).delete();
+				new File(headPath).delete();
 			}
-		}
-		if (!new File(headPath).exists()) {
-			try {
-				if (baseImg == null) {
-					baseImg = ImageIO.read(new File(basePath));
+			new File(path + File.separator + username).mkdirs();
+			if (new File(headPath).exists() && new File(bodyPath).exists()) {
+				try {
+					return img2Base64(ImageIO.read(new File(bodyPath)));
+				} catch (IOException e) {
+					return "";
 				}
-				headImg = baseImg.getSubimage(90, 50, 80, 80);
+			}
+			BufferedImage baseImg = saveImage(imageurl);
+			BufferedImage fullBodyImg = null;
+			BufferedImage headImg = baseImg.getSubimage(8, 8, 8, 8);
+			if (!new File(headPath).exists()) {
 				ImageIO.write(headImg, "png", new File(headPath));
 				userDataProvider.setColor(userid, ColorUtils.toHtmlColor(ColorUtils.averageColorFromImage(headImg)));
-			} catch (IOException e) {
-				e.printStackTrace();
-				error = true;
 			}
-		}
-		if (!new File(bodyPath).exists()) {
-			try {
-				if (baseImg == null) {
-					baseImg = ImageIO.read(new File(basePath));
+			if (!new File(bodyPath).exists()) {
+				// get parts from downloaded image
+				BufferedImage bodyImg = baseImg.getSubimage(20, 20, 8, 12);
+				BufferedImage leftArmImg = baseImg.getSubimage(44, 20, 4, 12);
+				BufferedImage leftLegImg = baseImg.getSubimage(4, 20, 4, 12);
+				BufferedImage rightArmImg = null;
+				BufferedImage rightLegImg = null;
+				if (baseImg.getHeight() == 32) {
+					rightArmImg = mirrorLeftRight(leftArmImg);
+					rightLegImg = mirrorLeftRight(leftLegImg);
+				} else {
+					rightArmImg = baseImg.getSubimage(36, 52, 4, 12);
+					rightLegImg = baseImg.getSubimage(20, 52, 4, 12);
 				}
-				bodyImg = baseImg.getSubimage(50, 50, 160, 320);
-				ImageIO.write(bodyImg, "png", new File(bodyPath));
-			} catch (IOException e) {
-				e.printStackTrace();
-				error = true;
+				// put body image together
+				fullBodyImg = new BufferedImage(16, 32, BufferedImage.TYPE_INT_ARGB);
+				Graphics graphics = fullBodyImg.getGraphics();
+				graphics.drawImage(headImg, 4, 0, null);
+				graphics.drawImage(leftArmImg, 0, 8, null);
+				graphics.drawImage(bodyImg, 4, 8, null);
+				graphics.drawImage(rightArmImg, 12, 8, null);
+				graphics.drawImage(leftLegImg, 4, 20, null);
+				graphics.drawImage(rightLegImg, 8, 20, null);
+				ImageIO.write(fullBodyImg, "png", new File(bodyPath));
+			}
+			if (fullBodyImg == null) {
+				return "";
+			}
+			return img2Base64(fullBodyImg);
+		} catch (Exception e) {
+			System.out.println("Error while creating skin for " + username);
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+	public static BufferedImage mirrorUpDown(BufferedImage image) {
+		BufferedImage mirror = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		for (int i = 0; i < image.getWidth(); i++) {
+			for (int j = 0; j < image.getHeight() / 2; j++) {
+				mirror.setRGB(i, j, image.getRGB(i, image.getHeight() - j - 1));
+				mirror.setRGB(i, image.getHeight() - j - 1, image.getRGB(i, j));
 			}
 		}
-		if (error) {
-			return "";
+		return mirror;
+	}
+
+	public static BufferedImage mirrorLeftRight(BufferedImage image) {
+		BufferedImage mirror = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		for (int i = 0; i < image.getWidth() / 2; i++) {
+			for (int j = 0; j < image.getHeight(); j++) {
+				mirror.setRGB(i, j, image.getRGB(image.getWidth() - i - 1, j));
+				mirror.setRGB(image.getWidth() - i - 1, j, image.getRGB(i, j));
+			}
 		}
-		if (bodyImg == null) {
-			return "";
-		}
-		return img2Base64(bodyImg);
+		return mirror;
 	}
 
 	public static BufferedImage saveImage(String imageUrl) {

@@ -133,7 +133,7 @@ public class DataController {
 				String split = StaticConfig.VALUE_SPLIT;
 				int i = 0;
 				ret = "";
-				List<Player> list = userDataProvider.getPlayerList();
+				List<Player> list = userDataProvider.getPlayerListActive();
 				for (Player p : list) {
 					if (Utils.downloadFullUserImage(p.name, true, config.getPath().getSkins(), userDataProvider, p.id)
 							.length() == 0) {

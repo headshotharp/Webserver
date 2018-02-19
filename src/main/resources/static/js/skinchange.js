@@ -13,7 +13,7 @@ function updateSkins() {
 			if (count > 0) {
 				html = "Es konnten " + count + " Skins nicht aktualisiert werden!<br />";
 				for (var i = 0; i < count; i++) {
-					html += data[x] + ",";
+					html += data[i] + ",";
 				}
 			}else{
 				html = "Es wurden alle Skins aktualisiert";
