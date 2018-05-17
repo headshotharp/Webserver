@@ -14,9 +14,9 @@
 			<link rel="stylesheet" type="text/css" href="/css/progressbar.css" />
 			<div class="row bg">
 				<div class="col-md-12">
-					<p>Server ist <b th:text="${server.online} == true? 'online' : 'offline'" /></p>
-					<p>Es sind <b th:text="${server.onlinePlayers.size()}" /> Spieler online</p>
-					<p>Der Server läuft seit <b th:text="${server.uptime}" /></p>
+					<p>Server ist <b th:text="${server.online} == true? 'online' : 'offline'"></b></p>
+					<p>Es sind <b th:text="${server.onlinePlayers.size()}"></b> Spieler online</p>
+					<p>Der Server läuft seit <b th:text="${server.uptime}"></b></p>
 				</div>
 			</div>
 			<div class="row bg">
@@ -53,11 +53,11 @@
 			<div class="row bg">
 				<div class="col-md-6">
 					<h3>Abgebaute Blöcke:</h3>
-					<div th:remove="tag" th:utext="${tableBreak}" />
+					<div th:remove="tag" th:utext="${tableBreak}"></div>
 				</div>
 				<div class="col-md-6">
 					<div class='donut'>
-						<svg id="donut_block_break" viewBox="0 0 300 260" />
+						<svg id="donut_block_break" viewbox="0 0 300 260"></svg>
 						<p><small th:text="'Prozentual aller abgebauten Blöcke Serverweit' + (${thismonth} == true ? ' diesen Monat':'')"></small></p>
 					</div>
 				</div>
@@ -65,11 +65,11 @@
 			<div class="row bg">
 				<div class="col-md-6">
 					<h3>Platzierte Blöcke:</h3>
-					<div th:remove="tag" th:utext="${tablePlace}" />
+					<div th:remove="tag" th:utext="${tablePlace}"></div>
 				</div>
 				<div class="col-md-6">
 					<div class='donut'>
-						<svg id="donut_block_place" viewBox="0 0 300 260"  />
+						<svg id="donut_block_place" viewbox="0 0 300 260"></svg>
 						<p><small th:text="'Prozentual aller platziertzen Blöcke Serverweit' + (${thismonth} == true ? ' diesen Monat':'')"></small></p>
 					</div>
 				</div>
