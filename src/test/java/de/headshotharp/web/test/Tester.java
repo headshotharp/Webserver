@@ -11,19 +11,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import de.headshotharp.web.data.UserDataProvider;
 import de.headshotharp.web.data.type.Player;
 
-@RunWith(SpringRunner.class)
+@Disabled
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
 public class Tester {
 	@Autowired
@@ -34,7 +33,7 @@ public class Tester {
 
 	private String baseUrl = null;
 
-	@Before
+	@BeforeEach
 	public void initialize() throws MalformedURLException {
 		baseUrl = "http://localhost:" + port + "/";
 	}
