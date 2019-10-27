@@ -110,7 +110,7 @@ public class Utils {
 			UserDataProvider userDataProvider, int userid) {
 		try {
 			// setup
-			String imageurl = "http://minecraft.tools/download-skin/" + username;
+			String imageurl = "https://minecraft.tools/download-skin/" + username;
 			String bodyPath = path + File.separator + username + File.separator + "body.png";
 			String headPath = path + File.separator + username + File.separator + "head.png";
 			if (clean) {
@@ -196,9 +196,12 @@ public class Utils {
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestProperty("User-Agent",
 					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
-			BufferedImage image = ImageIO.read(connection.getInputStream());
+			BufferedImage image = ImageIO.read(
+					// connection.getInputStream()
+					url);// NOSONAR
 			return image;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
