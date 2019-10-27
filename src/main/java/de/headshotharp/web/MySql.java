@@ -27,6 +27,6 @@ public class MySql {
 	private String createUrl() {
 		return "jdbc:mysql://" + config.getMysql().getHost() + ":" + config.getMysql().getPort() + "/"
 				+ config.getMysql().getDatabase()
-				+ "?autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8";
+				+ "?autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC";
 	}
 }
