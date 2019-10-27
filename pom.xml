@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.headshotharp</groupId>
 	<artifactId>web</artifactId>
-	<version>1.0-INIT</version>
+	<version>1.1-SNAPSHOT</version>
 	<name>headshotharp.de website</name>
 	<packaging>jar</packaging>
 
