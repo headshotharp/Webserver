@@ -50,7 +50,7 @@ public class ItemShopItem {
 	public static String getImageByType(String type) {
 		if (type.equalsIgnoreCase("DIAMOND_PICKAXE"))
 			return "mc_pickaxe.png";
-		if (type.equalsIgnoreCase("DIAMOND_SPADE"))
+		if (type.equalsIgnoreCase("DIAMOND_SHOVEL"))
 			return "mc_shovel.png";
 		if (type.equalsIgnoreCase("DIAMOND_AXE"))
 			return "mc_axe.png";

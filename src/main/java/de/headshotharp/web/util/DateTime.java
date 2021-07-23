@@ -36,6 +36,7 @@ public class DateTime {
 	 * please use {@link de.headshotharp.web.util.DateTime.DateTimeFormat
 	 * DateTimeFormat}
 	 * 
+	 * @deprecated
 	 * @see java.text.SimpleDateFormat SimpleDateFormat
 	 * @see de.headshotharp.web.util.DateTime.DateTimeFormat DateTimeFormat
 	 */
@@ -47,6 +48,7 @@ public class DateTime {
 	 * please use {@link de.headshotharp.web.util.DateTime.DateTimeFormat
 	 * DateTimeFormat}
 	 * 
+	 * @deprecated
 	 * @see java.text.SimpleDateFormat SimpleDateFormat
 	 * @see de.headshotharp.web.util.DateTime.DateTimeFormat DateTimeFormat
 	 */
@@ -119,8 +121,9 @@ public class DateTime {
 
 	public boolean isBetween(DateTime start, DateTime end) {
 		long me = toDate().getTime();
-		if (start.toDate().getTime() <= me && me <= end.toDate().getTime())
+		if (start.toDate().getTime() <= me && me <= end.toDate().getTime()) {
 			return true;
+		}
 		return false;
 	}
 
@@ -185,12 +188,15 @@ public class DateTime {
 	}
 
 	public static DateTime parse(String sqlTimestamp) {
-		if (sqlTimestamp == null)
+		if (sqlTimestamp == null) {
 			return new DateTime();
-		if (sqlTimestamp.equals(""))
+		}
+		if (sqlTimestamp.equals("")) {
 			return new DateTime();
-		if (sqlTimestamp.equals("0000-00-00 00:00:00"))
+		}
+		if (sqlTimestamp.equals("0000-00-00 00:00:00")) {
 			return new DateTime();
+		}
 		try {
 			Date d = DateTimeFormat.FORMAT_SQL_TIMESTAMP.getSimpleDateFormat().parse(sqlTimestamp);
 			return byDate(d);
@@ -218,8 +224,8 @@ public class DateTime {
 	 * this class provides static usage of newly created objects
 	 */
 	public static enum DateTimeFormat {
-		FORMAT_SQL_TIMESTAMP("yyyy-MM-dd HH:mm:ss"), FORMAT_SQL_DATESTAMP("yyyy-MM-dd"), FORMAT_HUMAN_READABLE(
-				"dd.MM.yyyy HH:mm:ss"), FORMAT_HUMAN_READABLE_DATE("dd.MM.yyyy");
+		FORMAT_SQL_TIMESTAMP("yyyy-MM-dd HH:mm:ss"), FORMAT_SQL_DATESTAMP("yyyy-MM-dd"),
+		FORMAT_HUMAN_READABLE("dd.MM.yyyy HH:mm:ss"), FORMAT_HUMAN_READABLE_DATE("dd.MM.yyyy");
 
 		private String pattern;
 
